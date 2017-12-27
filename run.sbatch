@@ -6,6 +6,8 @@
 #SBATCH --time=01:00:00
 #SBATCH --partition=sandyb
 #SBATCH --mem-per-cpu=4000
+#SBATCH --output=example_sbatch.out
+#SBATCH --error=example_sbatch.err
 
 module load python
 
