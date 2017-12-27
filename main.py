@@ -1,0 +1,1 @@
+print ($SLURM_JOB_NODELIST)
