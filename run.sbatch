@@ -11,4 +11,4 @@
 
 module load python
 
-python main.py 
+python main.py --nodes $SLURM_JOB_NODELIST
