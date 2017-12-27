@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #SBATCH --job-name=arrayJob
-#SBATCH --nodes=2
+#SBATCH --nodes=10
 #SBATCH --exclusive
-#SBATCH --time=01:00:00
+#SBATCH --time=00:01:00
 #SBATCH --partition=sandyb
 #SBATCH --mem-per-cpu=4000
 #SBATCH --output=example_sbatch.out
