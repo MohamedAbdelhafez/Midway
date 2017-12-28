@@ -12,6 +12,11 @@
     
 #f.close()
 import numpy as np
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,currentdir+"/Packages") 
+from main_grape.Grape_original import Grape
 
 #Defining time scales
 total_time = 200
@@ -104,3 +109,13 @@ u0 = None
 print ("Parameters Defined")
 
 
+
+      
+uks,U_final = Grape(H0,Hops,Hnames,U,total_time,steps,psi0,convergence=convergence, draw = [states_draw_list,states_draw_names],  
+                    
+                    show_plots = False, c_ops = c_ops, initial_guess = u0, use_gpu = True,
+       unitary_error = 1e-4,  maxA=ops_max_amp, state_transfer = state_transfer, method ='Adam', expect_op = IY,
+                    reg_coeffs=reg_coeffs, file_name='JC', trajectories = 2000, do_all_traj = True,
+                    data_path = '/Data')
+
+######################################################################################################################
