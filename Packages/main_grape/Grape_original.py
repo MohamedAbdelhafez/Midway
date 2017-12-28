@@ -50,7 +50,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
 
         file_path = os.path.join(data_path,file_name)
         
-        print "data saved at: " + str(file_path)
+        print ("data saved at: " + str(file_path))
 
         with H5File(file_path) as hf:
             hf.add('H0',data=H0)
@@ -99,7 +99,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             maxAmp = 1.5*np.max(np.abs(initial_guess))*np.ones(len(Hops))
     else:
         maxAmp = maxA
-    
+    '''
     # pass in system parameters
     sys_para = SystemParameters(H0,Hops,Hnames,U,U0,total_time,steps,states_concerned_list,dressed_info,maxAmp, draw,initial_guess,  show_plots,unitary_error,state_transfer,no_scaling,reg_coeffs, save, file_path, Taylor_terms, use_gpu, use_inter_vecs,sparse_H,sparse_U,sparse_K, c_ops, trajectories, do_all_traj, expect_op)
     
