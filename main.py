@@ -101,6 +101,6 @@ c_ops.append(np.sqrt(kappa)*a)
 
 u0 = None
 
-print "Parameters Defined"
+print ("Parameters Defined")
 
 
