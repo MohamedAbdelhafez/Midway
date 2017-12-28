@@ -138,7 +138,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 hf.add('wall_clock_time',data=np.array(wall_clock_time))
             print "data saved at: " + str(file_path)
         
-        display.clear_output()
+        display.clear_output() ''' 
     
     
    
