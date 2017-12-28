@@ -9,5 +9,6 @@
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 
-module load cuda/8.0 Anaconda3/5.0.0.1
+
+module load tensorflow
 python main.py 
