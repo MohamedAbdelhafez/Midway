@@ -3,9 +3,8 @@ import numpy as np
 import scipy.linalg as la
 from core.TensorflowState import TensorflowState
 from core.SystemParameters import SystemParameters
-from core.Convergence import Convergence
-from core.run_session import run_session
-from core.Python_evolve import Python_evolve
+#from core.Convergence import Convergence
+#from core.run_session import run_session
 
 
 import random as rd
@@ -99,7 +98,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             maxAmp = 1.5*np.max(np.abs(initial_guess))*np.ones(len(Hops))
     else:
         maxAmp = maxA
-    '''
+    
     # pass in system parameters
     sys_para = SystemParameters(H0,Hops,Hnames,U,U0,total_time,steps,states_concerned_list,dressed_info,maxAmp, draw,initial_guess,  show_plots,unitary_error,state_transfer,no_scaling,reg_coeffs, save, file_path, Taylor_terms, use_gpu, use_inter_vecs,sparse_H,sparse_U,sparse_K, c_ops, trajectories, do_all_traj, expect_op)
     
@@ -114,7 +113,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
     with tf.device(dev):
         tfs = TensorflowState(sys_para) # create tensorflow graph
         graph = tfs.build_graph()
-    
+    '''
     conv = Convergence(sys_para,time_unit,convergence)
     
     # run the optimization

@@ -270,7 +270,7 @@ class SystemParameters:
                 hf.add('taylor_terms',data=self.exp_terms)
                 hf.add('taylor_scaling',data=self.scaling)
         
-        print "Using "+ str(self.exp_terms) + " Taylor terms and "+ str(self.scaling)+" Scaling & Squaring terms"
+        print ("Using "+ str(self.exp_terms) + " Taylor terms and "+ str(self.scaling)+" Scaling & Squaring terms")
         
         i_array = np.eye(2*self.state_num)
         op_matrix_I=i_array.tolist()
