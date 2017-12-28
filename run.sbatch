@@ -6,10 +6,9 @@
 #SBATCH --time=01:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=8
-#SBATCH --partition=gpu
-#SBATCH --gres=gpu:1
+#SBATCH --partition=sandyb
 
 
-module load tensorflow
-module load python
+module load cuda/8.0 Anaconda3/5.0.0.1
+
 python main.py 
