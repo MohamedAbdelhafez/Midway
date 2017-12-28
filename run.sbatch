@@ -11,4 +11,5 @@
 
 
 module load tensorflow
+module load python
 python main.py 
