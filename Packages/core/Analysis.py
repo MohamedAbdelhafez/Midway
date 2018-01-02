@@ -17,7 +17,7 @@ class Analysis:
         self.feed_dict = tf_feed_dict
         self.avg_inter_vecs = avg_inter_vecs
         self.expects = expects
-	self.this_dir = os.path.dirname(__file__)    
+        self.this_dir = os.path.dirname(__file__)    
 
     def RtoCMat(self,M):
         # real to complex matrix isomorphism
