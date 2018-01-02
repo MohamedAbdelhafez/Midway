@@ -19,8 +19,8 @@ sys.path.insert(0,currentdir+"/Packages")
 from main_grape.Grape_original import Grape
 
 #Defining time scales
-total_time = 200
-steps = 1000
+total_time = 20
+steps = 100
 state_transfer = True
 RWA = True
 RFT = True

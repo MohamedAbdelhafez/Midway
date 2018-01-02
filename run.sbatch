@@ -12,4 +12,4 @@
 module load Anaconda3/5.0.0.1
 module load cuda/8.0
 which python
-python main.py
+python -u main.py
