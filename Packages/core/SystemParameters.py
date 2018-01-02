@@ -130,13 +130,13 @@ class SystemParameters:
         Mt=np.identity(len(M),dtype=M.dtype)
         factorial=1.0 #for factorials
         
-        for ii in xrange(1,exp_t):
+        for ii in range(1,exp_t):
             factorial*=ii
             Mt=np.dot(Mt,M)
             U+=Mt/((2.**float(ii*scaling_terms))*factorial) #scaling by 2**scaling_terms
 
         
-        for ii in xrange(scaling_terms):
+        for ii in range(scaling_terms):
             U=np.dot(U,U) #squaring scaling times
         
         return U
@@ -147,13 +147,13 @@ class SystemParameters:
         Mt=1.0
         factorial=1.0 #for factorials
         
-        for ii in xrange(1,exp_t):
+        for ii in range(1,exp_t):
             factorial*=ii
             Mt=M*Mt
             U+=Mt/((2.**float(ii*scaling_terms))*factorial) #scaling by 2**scaling_terms
 
         
-        for ii in xrange(scaling_terms):
+        for ii in range(scaling_terms):
             U=np.dot(U,U) #squaring scaling times
         
         return U
