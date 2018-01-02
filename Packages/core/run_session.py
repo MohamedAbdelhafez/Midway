@@ -205,7 +205,7 @@ class run_session:
                     self.time = time.time()
                     for ii in range (len(self.divided_branches)):
                         
-                        sys.stdout.write('\r'+' Iteration: ' +str(self.iterations) + ": Running batch #" +str(ii+1)+" out of "+str(len(self.divided_branches))+ " with "+str(self.divided_branches[ii])+" jump trajectories, time for last batch is "+str(time.time()-self.time))
+                        print('\r'+' Iteration: ' +str(self.iterations) + ": Running batch #" +str(ii+1)+" out of "+str(len(self.divided_branches))+ " with "+str(self.divided_branches[ii])+" jump trajectories, time for last batch is "+str(time.time()-self.time))
                         self.time = time.time()
                         sys.stdout.flush()
                         needed_traj = self.divided_branches[ii]
@@ -465,7 +465,7 @@ class run_session:
         if self.show_plots:
             self.conv.update_plot_summary(self.l, self.rl, self.anly,self.j)
         else:
-            print ('Error = :%1.5e; Runtime: %.1fs; Iterations = %d, grads =  %10.3e, unitary_metric = %.5f' % (
+            print (' Error = :%1.5e; Runtime: %.1fs; Iterations = %d, grads =  %10.3e, unitary_metric = %.5f' % (
             self.l, self.elapsed, self.iterations, self.g_squared, self.metric) + ", jump trajectories: " + str(self.j))
     
     
