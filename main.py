@@ -19,8 +19,8 @@ sys.path.insert(0,currentdir+"/Packages")
 from main_grape.Grape_original import Grape
 
 #Defining time scales
-total_time = 100
-steps = 500
+total_time = 200
+steps = 1000
 state_transfer = True
 RWA = True
 RFT = True
@@ -36,7 +36,7 @@ fq = 9
 g = 0.1*np.pi
 
 
-mode_state_num = 10
+mode_state_num = 30
 
 state_num = qubit_state_num * mode_state_num
 
@@ -115,7 +115,7 @@ uks,U_final = Grape(H0,Hops,Hnames,U,total_time,steps,psi0,convergence=convergen
                     
                     show_plots = False, c_ops = c_ops, initial_guess = u0, use_gpu = True,
        unitary_error = 1e-4,  maxA=ops_max_amp, state_transfer = state_transfer, method ='Adam', expect_op = IY,
-                    reg_coeffs=reg_coeffs, file_name='JC', trajectories = 2000, do_all_traj = False,
+                    reg_coeffs=reg_coeffs, file_name='JC', trajectories = 10000, do_all_traj = False,
                     data_path = str(currentdir)+'/Data')
 
 ######################################################################################################################
