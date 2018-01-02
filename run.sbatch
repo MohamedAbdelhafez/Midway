@@ -6,10 +6,9 @@
 #SBATCH --time=00:01:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=8
-#SBATCH --partition=sandyb
-
+#SBATCH -p gpu2
+#SBATCH --gres=gpu:1
 
 module load Anaconda3/5.0.0.1
-
-python Python 3.6.2 |Anaconda custom (64-bit)| (default, Jul 20 2017, 13:51:32) 
-python main.py 
+moudle load cuda/8.0
+python Python 3.6.2 |Anaconda custom (64-bit)| (default, Jul 20 2017, 13:51:32) main.py
