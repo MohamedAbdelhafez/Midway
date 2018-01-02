@@ -11,4 +11,4 @@
 
 module load Anaconda3/5.0.0.1
 module load cuda/8.0
-python Python 3.6.2 |Anaconda custom (64-bit)| (default, Jul 20 2017, 13:51:32) main.py
+python Python 3.6.2 |Anaconda custom (64-bit)| main.py
