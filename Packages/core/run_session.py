@@ -337,8 +337,10 @@ class run_session:
         return inter_vecs_mag_squared_list
     
         
+    def create_avg_expects(self):
         
         
+              
         return [x + y for x, y in zip(self.expects_no_jump, self.expects_jump)]  
     def create_avg_inter_vecs_all(self):
         state_num = self.sys_para.state_num
