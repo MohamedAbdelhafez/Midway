@@ -6,9 +6,12 @@
 #SBATCH --time=00:01:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=8
-#SBATCH --partition=broadwl
+#SBATCH --partition=sandyb
 
 
-module load cuda/8.0 Anaconda3/5.0.0.1
+module purge
+module load Anaconda3/5.0.0.1
+module load cuda/8.0
+which python
 
 python main.py 
