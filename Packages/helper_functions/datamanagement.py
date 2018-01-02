@@ -33,7 +33,7 @@ class H5File(h5py.File):
         return branch
 
     def _my_assign_dset(self, dspath, ds, val):
-        print 'assigning', ds, val
+        print ('assigning', ds, val)
         branch = self._my_ds_from_path(dspath)
         branch[ds] = val
 
@@ -130,7 +130,7 @@ class H5File(h5py.File):
         except:
             notes = []
         if print_notes:
-            print '\n'.join(notes)
+            print ('\n'.join(notes))
         if one_string:
             notes = '\n'.join(notes)
         return notes
