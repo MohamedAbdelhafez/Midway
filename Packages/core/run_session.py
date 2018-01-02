@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from Analysis import Analysis
+from core.Analysis import Analysis
 import os
 import time
 from scipy.optimize import minimize
