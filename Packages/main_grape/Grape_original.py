@@ -69,7 +69,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             
             if not initial_guess is None:
                 hf.add('initial_guess', data =initial_guess)
-            hf.add('method', method)
+            #hf.add('method', method)
             
             g1 = hf.create_group('convergence')
             for k, v in convergence.items():
