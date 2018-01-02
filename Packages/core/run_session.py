@@ -32,7 +32,7 @@ class run_session:
             
             tf.global_variables_initializer().run()
 
-            print "Initialized"
+            print ("Initialized")
             
             if self.method == 'EVOLVE':
                 self.start_time = time.time()
@@ -335,7 +335,7 @@ class run_session:
             idx = idx + int(self.needed[kk])
         
         return inter_vecs_mag_squared_list
-    def create_avg_expects(self):
+    
         
         
         
@@ -463,8 +463,8 @@ class run_session:
         if self.show_plots:
             self.conv.update_plot_summary(self.l, self.rl, self.anly,self.j)
         else:
-            print 'Error = :%1.5e; Runtime: %.1fs; Iterations = %d, grads =  %10.3e, unitary_metric = %.5f' % (
-            self.l, self.elapsed, self.iterations, self.g_squared, self.metric) + ", jump trajectories: " + str(self.j)
+            print ('Error = :%1.5e; Runtime: %.1fs; Iterations = %d, grads =  %10.3e, unitary_metric = %.5f' % (
+            self.l, self.elapsed, self.iterations, self.g_squared, self.metric) + ", jump trajectories: " + str(self.j))
     
     
     def minimize_opt_fun(self,x):
@@ -475,7 +475,7 @@ class run_session:
             self.conv_time = time.time()-self.start_time
             self.conv_iter = self.iterations
             self.end = True
-            print 'Target fidelity reached'
+            print ('Target fidelity reached')
             self.grads= 0*self.grads # set zero grads to terminate the scipy optimization
         
         self.update_and_save()
@@ -493,7 +493,7 @@ class run_session:
         self.conv_time = 0.
         self.conv_iter=0
         self.end=False
-        print "Starting " + self.method + " Optimization"
+        print ("Starting " + self.method + " Optimization")
         self.start_time = time.time()
         
         x0 = self.sys_para.ops_weight_base
@@ -503,12 +503,12 @@ class run_session:
 
         uks=np.reshape(res['x'],(len(self.sys_para.ops_c),len(res['x'])/len(self.sys_para.ops_c)))
 
-        print self.method + ' optimization done'
+        print (self.method + ' optimization done')
         
         g, l,rl = self.session.run([self.tfs.grad_squared, self.tfs.loss, self.tfs.reg_loss])
             
         if self.sys_para.show_plots == False:
-            print res.message
+            print (res.message)
             print("Error = %1.2e" %l)
             print ("Total time is " + str(time.time() - self.start_time))
             

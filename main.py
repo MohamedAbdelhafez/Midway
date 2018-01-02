@@ -115,7 +115,7 @@ uks,U_final = Grape(H0,Hops,Hnames,U,total_time,steps,psi0,convergence=convergen
                     
                     show_plots = False, c_ops = c_ops, initial_guess = u0, use_gpu = True,
        unitary_error = 1e-4,  maxA=ops_max_amp, state_transfer = state_transfer, method ='Adam', expect_op = IY,
-                    reg_coeffs=reg_coeffs, file_name='JC', trajectories = 2000, do_all_traj = True,
+                    reg_coeffs=reg_coeffs, file_name='JC', trajectories = 2000, do_all_traj = False,
                     data_path = str(currentdir)+'/Data')
 
 ######################################################################################################################

@@ -3,8 +3,8 @@ import numpy as np
 import scipy.linalg as la
 from core.TensorflowState import TensorflowState
 from core.SystemParameters import SystemParameters
-#from core.Convergence import Convergence
-#from core.run_session import run_session
+from core.Convergence import Convergence
+from core.run_session import run_session
 
 
 import random as rd
@@ -113,13 +113,13 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
     with tf.device(dev):
         tfs = TensorflowState(sys_para) # create tensorflow graph
         graph = tfs.build_graph()
-    '''
+    
     conv = Convergence(sys_para,time_unit,convergence)
     
     # run the optimization
     try:
         SS = run_session(tfs,graph,conv,sys_para,method, show_plots = sys_para.show_plots, use_gpu = use_gpu)
-        
+        '''
         # save wall clock time   
         if save:
             wall_clock_time = time.time() - grape_start_time
