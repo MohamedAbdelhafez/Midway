@@ -11,12 +11,5 @@
 
 module load Anaconda3/5.0.0.1
 
-import tensorflow as tf
-hello = tf.constant('Hello, TensorFlow!')
-
-# Start tf session
-sess = tf.Session()
-
-# Run the op
-print(sess.run(hello))
-#python main.py 
+python Python 3.6.2 |Anaconda custom (64-bit)| (default, Jul 20 2017, 13:51:32) 
+python main.py 
