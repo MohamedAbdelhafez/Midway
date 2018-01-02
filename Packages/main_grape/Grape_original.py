@@ -119,25 +119,4 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
     # run the optimization
     SS = run_session(tfs,graph,conv,sys_para,method, show_plots = sys_para.show_plots, use_gpu = use_gpu)
     return SS.uks,SS.Uf
-        '''
-        # save wall clock time   
-        if save:
-            wall_clock_time = time.time() - grape_start_time
-            with H5File(file_path) as hf:
-                hf.add('wall_clock_time',data=np.array(wall_clock_time))
-            print "data saved at: " + str(file_path)
         
-    
-    except KeyboardInterrupt:
-        
-        # save wall clock time   
-        if save:
-            wall_clock_time = time.time() - grape_start_time
-            with H5File(file_path) as hf:
-                hf.add('wall_clock_time',data=np.array(wall_clock_time))
-            print "data saved at: " + str(file_path)
-        
-        display.clear_output() ''' 
-    
-    
-   
