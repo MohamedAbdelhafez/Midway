@@ -19,8 +19,8 @@ sys.path.insert(0,currentdir+"/Packages")
 from main_grape.Grape_original import Grape
 
 #Defining time scales
-total_time = 200
-steps = 1000
+total_time = 50
+steps = 500
 state_transfer = True
 RWA = True
 RFT = True
@@ -36,7 +36,7 @@ fq = 9
 g = 0.1*np.pi
 
 
-mode_state_num = 30
+mode_state_num = 10
 
 state_num = qubit_state_num * mode_state_num
 
