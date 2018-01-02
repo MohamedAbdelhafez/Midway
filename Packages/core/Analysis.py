@@ -1,6 +1,7 @@
 import numpy as np
 from helper_functions.grape_functions import sort_ev,get_state_index
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import tensorflow as tf
 
 from helper_functions.datamanagement import H5File
