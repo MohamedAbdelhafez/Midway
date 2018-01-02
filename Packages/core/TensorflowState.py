@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 import math
 from helper_functions.grape_functions import c_to_r_mat, sort_ev
-from RegularizationFunctions import get_reg_loss
+from core.RegularizationFunctions import get_reg_loss
 from tensorflow.python.framework import function
 from tensorflow.python.framework import ops
 
