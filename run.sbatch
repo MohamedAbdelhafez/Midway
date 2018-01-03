@@ -6,8 +6,7 @@
 #SBATCH --time=02:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=8
-#SBATCH -p gpu2
-#SBATCH --gres=gpu:1
+#SBATCH -p bigmem
 
 module load Anaconda3/5.0.0.1
 module load cuda/8.0
