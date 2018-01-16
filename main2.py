@@ -18,10 +18,28 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,currentdir+"/Packages") 
 
 task_index  = int( os.environ['SLURM_PROCID'] )
-tf_hostlist = os.environ['SLURM_NODELIST']
+tf_hostlist = str(os.environ['SLURM_NODELIST'])
 
-print (":P")
-print (task_index)
-print (":P")
-
-print (tf_hostlist)
+foo = ( [pos for pos, char in enumerate(tf_hostlist) if char == ','])
+clusters = tf_hostlist.count(',')
+start_i = 9
+hosts =[]
+server = tf_hostlist[0:8]
+for ii in range (clusters+1):
+    if ii>0:
+        start_i = foo[ii-1]+1
+    if clusters==0:
+        end_i = len(tf_hostlist)-1
+    elif ii != clusters:
+        end_i = foo[ii]
+    else:
+        end_i = len(tf_hostlist)-1
+    string = tf_hostlist[start_i:end_i]
+    if (len(string) <5):
+        hosts.append(server+string)
+    else:
+        s = int(string[0:4])
+        e = int(string[6:10])
+        for jj in range (e-s+1):
+            hosts.append(server+str(s+jj).zfill(4))
+print(hosts)
