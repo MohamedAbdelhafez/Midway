@@ -23,6 +23,5 @@ tf_hostlist = os.environ['SLURM_NODELIST']
 print (":P")
 print (task_index)
 print (":P")
-print (n_tasks)
-print (":P")
+
 print (tf_hostlist)
