@@ -18,7 +18,6 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,currentdir+"/Packages") 
 
 task_index  = int( os.environ['SLURM_PROCID'] )
-n_tasks     = int( os.environ['SLURM_NPROCS'] )
 tf_hostlist = os.environ['SLURM_NODELIST']
 
 print (":P")
