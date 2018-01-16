@@ -16,7 +16,6 @@ import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,currentdir+"/Packages") 
-from main_grape.Grape_original import Grape
 
 task_index  = int( os.environ['SLURM_PROCID'] )
 n_tasks     = int( os.environ['SLURM_NPROCS'] )

@@ -5,7 +5,6 @@
 #SBATCH --error=cpuSbatch.err
 #SBATCH --time=00:20:00
 #SBATCH --nodes=8
-#SBATCH --ntasks=1
 #SBATCH -p broadwl
 
 module load Anaconda3/5.0.0.1
