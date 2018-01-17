@@ -76,7 +76,7 @@ for ii in range (clusters+1):
         for jj in range (e-s+1):
             hosts.append(server+str(s+jj).zfill(4)+":2222")
 print(hosts)
-print(job_name)
+print(node_name)
 idx = hosts.index(node_name+":2222") 
 if (idx==0):
     job_name = "ps"
