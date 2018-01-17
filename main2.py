@@ -83,7 +83,7 @@ if (idx==0):
 else:
     job_name = "worker"
     task_index = idx -1
-cluster = tf.train.ClusterSpec( {"ps" : [tf_hostlist[0]], "worker": tf_hostlist[1:] } )
+cluster = tf.train.ClusterSpec( {"ps" : [hosts[0]], "worker": hosts[1:] } )
 server = tf.train.Server(server_or_cluster_def=cluster,
                          job_name=job_name, task_index=task_index)
 if my_job_name == "ps":
