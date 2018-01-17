@@ -98,7 +98,11 @@ else:
         W = tf.Variable(tf.zeros([steps, 2]))
         b = tf.Variable(tf.zeros([2]))
         m = tf.Variable(tf.zeros([steps,2]))
-    with tf.device('/job:worker/task:{}'.format(task_index)):
+    with tf.device(tf.train.replica_device_setter( worker_device="/job:worker/task:%d" % task_index, cluster=cluster)):
+        global_step = tf.get_variable('global_step', [], 
+                                      initializer = tf.constant_initializer(0), 
+                                      trainable = False,
+                                      dtype = tf.int32)
         x = tf.placeholder(tf.float32, [None, steps])
         xt = tf.placeholder(tf.float32, [None, steps])
         yt = tf.matmul(tf.square(xt),m) + tf.matmul(xt, W) + b
@@ -109,10 +113,13 @@ else:
         opt = tf.train.AdamOptimizer(rate)
         opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate=len(cluster['worker']),
                                 total_num_replicas=len(cluster['worker']))
-        train_step = opt.minimize(loss)
+        train_step = opt.minimize(loss, global_step = global_step)
         sync_replicas_hook = opt.make_session_run_hook(is_chief)
         correct_prediction = tf.equal(tf.argmax(yt, 1), tf.argmax(yt_, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        init_op = tf.initialize_all_variables()
+        print("---Variables initialized---")
+
         
     step = 0
     sess = tf.train.MonitoredTrainingSession(master=server.target, is_chief=is_chief,
