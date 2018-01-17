@@ -135,9 +135,9 @@ else:
         all_test_labels = np.concatenate((g_test_labels[start_test:end_test],e_test_labels[start_test:end_test]))
         return all_train, all_train_labels, all_test, all_test_labels
     
-    iterations = 100
+    iterations = 1
     num_batches = len(hosts)-1
-    
+    print ("entering iterations")
     for i in range(iterations):
         tr,trl,tes,tesl = batch_generator(task_index, num_batches,  g_train, e_train, g_train_labels, e_train_labels, g_test, e_test, g_test_labels, e_test_labels)
         
@@ -148,6 +148,8 @@ else:
         sess.run(train_step, feed_dict={x: all_train, y_: all_train_labels})
         correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        print("trying session")
+        sys.stdout.flush()
         _,loss, ac, res, inpu  = (sess.run([train_step, loss, accuracy,y,y_], feed_dict={x: all_train,
                                           y_: all_train_labels, xt: all_test, yt_: all_test_labels}))
 
