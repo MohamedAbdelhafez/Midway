@@ -86,7 +86,7 @@ else:
 cluster = tf.train.ClusterSpec( {"ps" : [hosts[0]], "worker": hosts[1:] } )
 server = tf.train.Server(server_or_cluster_def=cluster,
                          job_name=job_name, task_index=task_index)
-if my_job_name == "ps":
+if job_name == "ps":
     server.join()
     
 else:
