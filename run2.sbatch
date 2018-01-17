@@ -1,10 +1,11 @@
 #!/bin/bash
 
 #SBATCH --job-name=cpuSbatch
-#SBATCH --output=cpuSbatch.out
-#SBATCH --error=cpuSbatch.err
 #SBATCH --time=00:20:00
-#SBATCH --nodes=4
+#SBATCH --output=arrayJob_%A_%a.out
+#SBATCH --error=arrayJob_%A_%a.err
+#SBATCH --array=1-4
+#SBATCH --ntasks=16
 #SBATCH -p broadwl
 
 module load Anaconda3/5.0.0.1
