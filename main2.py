@@ -13,13 +13,15 @@
 #f.close()
 import numpy as np
 import os,sys,inspect
+import tensorflow as tf
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,currentdir+"/Packages") 
 
 task_index  = int( os.environ['SLURM_PROCID'] )
 tf_hostlist = str(os.environ['SLURM_NODELIST'])
-
+node_name = str(os.environ["SLURMD_NODENAME"])
+print (node_name)
 foo = ( [pos for pos, char in enumerate(tf_hostlist) if char == ','])
 clusters = tf_hostlist.count(',')
 start_i = 9
@@ -36,10 +38,13 @@ for ii in range (clusters+1):
         end_i = len(tf_hostlist)-1
     string = tf_hostlist[start_i:end_i]
     if (len(string) <5):
-        hosts.append(server+string)
+        hosts.append(server+string+":2222")
     else:
         s = int(string[0:4])
         e = int(string[6:10])
         for jj in range (e-s+1):
-            hosts.append(server+str(s+jj).zfill(4))
+            hosts.append(server+str(s+jj).zfill(4)+":2222")
 print(hosts)
+
+#cluster = tf.train.ClusterSpec( {"ps" : tf_hostlist[0], "worker": tf_hostlist[1:] } )
+#server  = tf.train.Server( cluster.as_cluster_def(),job_name   = "local", task_index = task_index )
