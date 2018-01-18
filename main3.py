@@ -53,11 +53,11 @@ idx = hosts.index(node_name+":2222")
 if (idx==0):
     job_name = "ps"
     task_index = 0
-    print "1st"
+    print ("1st")
 else:
     job_name = "worker"
     task_index = idx -1
-    print "rest"
+    print ("rest")
 
 
     
