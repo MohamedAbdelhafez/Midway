@@ -13,13 +13,14 @@
 #f.close()
 import numpy as np
 import os,sys,inspect
-import tensorflow as tf
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,currentdir+"/Packages") 
 
 
 
+print ("node_id : " + str(os.environ['SLURM_NODEID']))
+print ("task_id : " + str(os.environ['SLURM_PROCID']))
 
 
 #task_index  = int( os.environ['SLURM_PROCID'] )
