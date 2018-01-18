@@ -21,6 +21,7 @@ sys.path.insert(0,currentdir+"/Packages")
 
 print ("node_id : " + str(os.environ['SLURM_NODEID']))
 print ("task_id : " + str(os.environ['SLURM_PROCID']))
+print ("host_name : " + str(os.environ['HOSTNAME']))
 
 
 #task_index  = int( os.environ['SLURM_PROCID'] )
