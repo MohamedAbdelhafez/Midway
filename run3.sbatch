@@ -14,5 +14,5 @@
 
 module load Anaconda3/5.0.0.1 
 
-srun -n 1 -N 1 t1.py  & 
-srun -n 1 -N 1 t1.py 
+srun -n 1 -N 1 -A abdelhafez t1.py  & 
+srun -n 1 -N 1 -A abdelhafez t1.py 
