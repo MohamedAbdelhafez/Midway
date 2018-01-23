@@ -4,4 +4,4 @@ import os
 import subprocess 
 
 print(os.environ["HOSTNAME"]) 
-print("-->" + repr(subprocess.getstatusoutput("hostname")))
+#print("-->" + repr(subprocess.getstatusoutput("hostname")))
