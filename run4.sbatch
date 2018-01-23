@@ -13,8 +13,8 @@
 
 
 module load Anaconda3/5.0.0.1 
-chmod u+x main4.py
-srun -n 1 -N 1 main4.py  & 
-srun -n 1 -N 1 main4.py  &
-srun -n 1 -N 1 main4.py  & 
-srun -n 1 -N 1 main4.py 
+chmod u+x main2.py
+srun -n 1 -N 1 main2.py  & 
+srun -n 1 -N 1 main2.py  &
+srun -n 1 -N 1 main2.py  & 
+srun -n 1 -N 1 main2.py 
