@@ -13,6 +13,6 @@
 
 
 module load Anaconda3/5.0.0.1 
+module load intelmpi 
 
-srun -n 1 -N 1 -A abdelhafez t1.py  & 
-srun -n 1 -N 1 -A abdelhafez t1.py 
+mpirun t1.py
