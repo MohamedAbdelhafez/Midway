@@ -13,6 +13,9 @@
 
 
 module load Anaconda3/5.0.0.1 
+which python
+source activate DL_CPU
+
 chmod u+x main2.py
 srun -n 1 -N 1 main2.py  & 
 srun -n 1 -N 1 main2.py  &
