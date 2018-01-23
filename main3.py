@@ -1,16 +1,4 @@
-#import argparse
-#parser = argparse.ArgumentParser()
-#parser.add_argument("--nodes", help="assign nodes id for this run",default='0')
-#args = parser.parse_args()
-#nodes = str(args.nodes)
-#start_node = int(nodes[7:10])
-#end_node = int(nodes[11:14])
-#f = open('out.txt','w')
-#for ii in range (end_node - start_node):
-    
-    #f.write(str(start_node+ii) + " ")
-    
-#f.close()
+#!/bin/env python 
 import numpy as np
 import os,sys,inspect, subprocess
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
