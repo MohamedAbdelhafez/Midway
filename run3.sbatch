@@ -13,5 +13,6 @@
 
 
 module load Anaconda3/5.0.0.1 
-
 chmod u+x t1.py
+srun -n 1 -N 1 t1.py  & 
+srun -n 1 -N 1 t1.py 

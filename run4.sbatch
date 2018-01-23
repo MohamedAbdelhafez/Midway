@@ -13,6 +13,6 @@
 
 
 module load Anaconda3/5.0.0.1 
-
+chmod u+x main3.py
 srun -n 1 -N 1 main3.py  & 
 srun -n 1 -N 1 main3.py 
