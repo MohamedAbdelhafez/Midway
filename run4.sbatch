@@ -3,9 +3,9 @@
 #SBATCH --job-name=cpuSbatch 
 #SBATCH --output=cpuSbatch.out 
 #SBATCH --error=cpuSbatch.err 
-#SBATCH --time=00:03:00 
-#SBATCH --nodes=2 
-#SBATCH --ntasks=2 
+#SBATCH --time=00:30:00 
+#SBATCH --nodes=4 
+#SBATCH --ntasks=4 
 #SBATCH --exclusive 
 #SBATCH -p broadwl 
 #SBATCH --tasks-per-node=1 
@@ -13,6 +13,8 @@
 
 
 module load Anaconda3/5.0.0.1 
-chmod u+x main3.py
-srun -n 1 -N 1 main3.py  & 
-srun -n 1 -N 1 main3.py 
+chmod u+x main4.py
+srun -n 1 -N 1 main4.py  & 
+srun -n 1 -N 1 main4.py  &
+srun -n 1 -N 1 main4.py  & 
+srun -n 1 -N 1 main4.py 

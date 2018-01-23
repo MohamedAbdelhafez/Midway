@@ -1,16 +1,5 @@
-#import argparse
-#parser = argparse.ArgumentParser()
-#parser.add_argument("--nodes", help="assign nodes id for this run",default='0')
-#args = parser.parse_args()
-#nodes = str(args.nodes)
-#start_node = int(nodes[7:10])
-#end_node = int(nodes[11:14])
-#f = open('out.txt','w')
-#for ii in range (end_node - start_node):
-    
-    #f.write(str(start_node+ii) + " ")
-    
-#f.close()
+#!/bin/env python 
+
 import numpy as np
 import os,sys,inspect
 import tensorflow as tf
@@ -88,10 +77,11 @@ cluster = tf.train.ClusterSpec( {"ps" : [hosts[0]], "worker": hosts[1:] } )
 server = tf.train.Server(server_or_cluster_def=cluster,
                          job_name=job_name, task_index=task_index)
 if job_name == "ps":
-    print ("lol")
+    print ("PS Joined")
     server.join()
     
 else:
+    print ("Worker running")
     is_chief = task_index == 0
     
     with tf.device("/job:ps/task:0"):
