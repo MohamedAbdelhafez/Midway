@@ -13,6 +13,5 @@
 
 
 module load Anaconda3/5.0.0.1 
-module load intelmpi 
 
-mpirun t1.py
+chmod u+x t1.py
