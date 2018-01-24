@@ -87,28 +87,28 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
         config = tf.ConfigProto(device_count = {'GPU': 0})
     else:
         config = tf.ConfigProto(gpu_options = gpu_options)
+    with graph.as_default():
+        sess = tf.train.MonitoredTrainingSession(master=tfs.server.target, config = config, is_chief=tfs.is_chief,
+                                             hooks=[tfs.sync_replicas_hook])
+        itera = 0
 
-    sess = tf.train.MonitoredTrainingSession(master=tfs.server.target, config = config, is_chief=tfs.is_chief,
-                                         hooks=[tfs.sync_replicas_hook])
-    itera = 0
-    
-    traj_num = sys_para.trajectories
-    max_traj = 1000
-    num_psi0 = len(sys_para.initial_vectors)
-    needed_traj = []
-    for kk in range (num_psi0):
-        needed_traj.append(traj_num)
-    jump_traj = np.sum(needed_traj)
-    num_batches = len(tfs.hosts)-1
-    num_traj_batch = int(traj_num/num_batches)
-    print ("entering iterations")
-    for ii in range(convergence['max_iterations']):
-        learning_rate = float(convergence['rate']) * np.exp(-float(ii) / convergence['learning_rate_decay'])
-        print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(tfs.task_id+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
-        sys.stdout.flush()
-        feed_dict = {tfs.learning_rate: 0, self.tfs.start: np.zeros([num_psi0]), self.tfs.end: np.ones([num_psi0]), self.tfs.num_trajs:num_traj_batch*np.ones([num_psi0])}
-        norms, expects, l1d,l2d,  quad, l1, l2, inter_vecs = sess.run([tfs.norms, tfs.expectations, tfs.Il1d, tfs.Il2d,tfs.quad, tfs.Il1, tfs.Il2, tfs.inter_vecs], feed_dict=self.feed_dict)
-        
+        traj_num = sys_para.trajectories
+        max_traj = 1000
+        num_psi0 = len(sys_para.initial_vectors)
+        needed_traj = []
+        for kk in range (num_psi0):
+            needed_traj.append(traj_num)
+        jump_traj = np.sum(needed_traj)
+        num_batches = len(tfs.hosts)-1
+        num_traj_batch = int(traj_num/num_batches)
+        print ("entering iterations")
+        for ii in range(convergence['max_iterations']):
+            learning_rate = float(convergence['rate']) * np.exp(-float(ii) / convergence['learning_rate_decay'])
+            print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(tfs.task_id+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
+            sys.stdout.flush()
+            feed_dict = {tfs.learning_rate: 0, self.tfs.start: np.zeros([num_psi0]), self.tfs.end: np.ones([num_psi0]), self.tfs.num_trajs:num_traj_batch*np.ones([num_psi0])}
+            norms, expects, l1d,l2d,  quad, l1, l2, inter_vecs = sess.run([tfs.norms, tfs.expectations, tfs.Il1d, tfs.Il2d,tfs.quad, tfs.Il1, tfs.Il2, tfs.inter_vecs], feed_dict=self.feed_dict)
+
         
 
     #conv = Convergence(sys_para,time_unit,convergence)
