@@ -445,7 +445,7 @@ class TensorflowState:
                                 total_num_replicas=len(self.hosts)-1)
         self.sync_replicas_hook = self.opt.make_session_run_hook(self.is_chief)
         #Here we extract the gradients of the pulses
-        self.grad = self.opt.compute_gradients(self.reg_loss)
+        self.grad = self.opt.compute_gradients(self.reg_loss, global_step = self.global_step)
 
         self.grad_pack = tf.stack([g for g, _ in self.grad])
         self.var = [v for _,v in self.grad]
@@ -828,7 +828,7 @@ class TensorflowState:
                     self.init_training_loss()
                     self.init_optimizer()
                     self.init_utilities()
-
+                    self.init_op = tf.global_variables_initializer()
 
                     print ("Graph " +str(self.task_index) + " built!")
         
