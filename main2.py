@@ -103,8 +103,8 @@ else:
         yt_ = tf.placeholder(tf.float32, [None, 2])
         loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
         opt = tf.train.AdamOptimizer(rate)
-        opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate=len(cluster['worker']),
-                                total_num_replicas=len(cluster['worker']))
+        opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate=len(hosts)-1,
+                                total_num_replicas=len(hosts)-1)
         train_step = opt.minimize(loss, global_step = global_step)
         sync_replicas_hook = opt.make_session_run_hook(is_chief)
         correct_prediction = tf.equal(tf.argmax(yt, 1), tf.argmax(yt_, 1))
