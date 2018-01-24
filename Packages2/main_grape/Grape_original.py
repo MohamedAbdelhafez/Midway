@@ -33,58 +33,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
     
     file_path = None
     
-    if save:
-        # saves all the input values
-        if file_name is None:
-            raise ValueError('Grape function input: file_name, is not specified.')
-
-        if data_path is None:
-            raise ValueError('Grape function input: data_path, is not specified.')
-
-
-        file_num = 0
-        while (os.path.exists(os.path.join(data_path,str(file_num).zfill(5) + "_"+ file_name+".h5"))):
-            file_num+=1
-
-        file_name = str(file_num).zfill(5) + "_"+ file_name+ ".h5"
-
-        file_path = os.path.join(data_path,file_name)
-        
-        print ("data saved at: " + str(file_path))
-
-        with H5File(file_path) as hf:
-            hf.add('H0',data=H0)
-            hf.add('Hops',data=Hops)
-            #hf.add('Hnames',data=Hnames)
-            hf.add('U',data=U)
-            hf.add('total_time', data=total_time)
-            hf.add('steps', data=steps)
-            hf.add('states_concerned_list', data=states_concerned_list)
-            hf.add('use_gpu',data=use_gpu)
-            hf.add('sparse_H',data=sparse_H)
-            hf.add('sparse_U',data=sparse_U)
-            hf.add('sparse_K',data=sparse_K)
-            
-            if not maxA is None:
-                hf.add('maxA', data=maxA)
-            
-            if not initial_guess is None:
-                hf.add('initial_guess', data =initial_guess)
-            #hf.add('method', method)
-            
-            g1 = hf.create_group('convergence')
-            for k, v in convergence.items():
-                g1.create_dataset(k, data = v)
-            
-            if not reg_coeffs is None:
-                g2 = hf.create_group('reg_coeffs')
-                for k, v in reg_coeffs.items():
-                    g2.create_dataset(k, data = v)
-                    
-            if not dressed_info is None:
-                g3 = hf.create_group('dressed_info')
-                for k, v in dressed_info.items():
-                    g3.create_dataset(k, data = v)        
+    
     
     if U0 is None:
         U0 = np.identity(len(H0))
@@ -111,9 +60,9 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
         dev = '/cpu:0'
         
         
-    with tf.device(dev):
-        tfs = TensorflowState(sys_para) # create tensorflow graph
-        graph = tfs.build_graph()
+    
+    tfs = TensorflowState(sys_para) # create tensorflow graph
+    graph = tfs.build_graph()
     
     #conv = Convergence(sys_para,time_unit,convergence)
     
