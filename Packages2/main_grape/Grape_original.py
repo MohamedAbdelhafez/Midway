@@ -6,13 +6,12 @@ import scipy.linalg as la
 from core.TensorflowState import TensorflowState
 from core.SystemParameters import SystemParameters
 #from core.Convergence import Convergence
-from core.run_session import run_session
+#from core.run_session import run_session
 
 
 import random as rd
 import time
 
-from helper_functions.datamanagement import H5File
 import os
 
 

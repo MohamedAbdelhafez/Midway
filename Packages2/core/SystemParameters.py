@@ -5,7 +5,6 @@ from helper_functions.grape_functions import get_state_index
 import scipy.linalg as la
 from scipy.special import factorial
 
-from helper_functions.datamanagement import H5File
 
 class SystemParameters:
 
@@ -103,15 +102,11 @@ class SystemParameters:
                 self.target_vector = c_to_r_vec(target_vector_c)
                 self.target_vectors.append(self.target_vector)
                 self.target_vectors_c.append(target_vector_c)
-        if self.save:
-            with H5File(self.file_path) as hf:
-                hf.add('target_vectors_c',data=np.array(self.target_vectors_c))  
+        
         if self.traj:
             self.cdaggerc=[]
             self.c_ops_real=[]
-            if self.save:
-                with H5File(self.file_path) as hf:
-                    hf.add('c_ops',data=self.c_ops)
+            
                    
             #ceating the effective hamiltonian that describes the evolution of states if no jumps occur
             for ii in range (len(self.c_ops)):
@@ -221,10 +216,7 @@ class SystemParameters:
 
             self.initial_vectors.append(self.initial_vector)
         
-        if self.save:
-            with H5File(self.file_path) as hf:
-                hf.add('initial_vectors_c',data=np.array(self.initial_vectors_c))
-
+        
 
     def init_operators(self):
         # Create operator matrix in numpy array
@@ -265,10 +257,6 @@ class SystemParameters:
             self.scaling = self.Taylor_terms[1]
             
         
-        if self.save:
-            with H5File(self.file_path) as hf:
-                hf.add('taylor_terms',data=self.exp_terms)
-                hf.add('taylor_scaling',data=self.scaling)
         
         print ("Using "+ str(self.exp_terms) + " Taylor terms and "+ str(self.scaling)+" Scaling & Squaring terms")
         
