@@ -795,7 +795,7 @@ class TensorflowState:
             print ("Building graph:")
             if self.job_name == "ps":
                 print ("PS Joined")
-                server.join()
+                self.server.join()
             else:
                 print ("Worker running")
                 self.is_chief = self.task_index == 0
