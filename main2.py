@@ -3,6 +3,7 @@
 import numpy as np
 import os,sys,inspect
 import tensorflow as tf
+import time
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,currentdir+"/Packages") 
@@ -147,7 +148,7 @@ else:
         all_test, all_test_labels = unison_shuffled_copies(tes, tesl)
         #sess.run(train_step, feed_dict={x: all_train, y_: all_train_labels})
         
-        print("Iteration "+ str(i))
+        #print("Iteration "+ str(i))
         sys.stdout.flush()
         _,l,ac  = (sess.run([train_step, loss,accuracy], feed_dict={x: all_train,
                                           y_: all_train_labels, xt: all_test, yt_: all_test_labels}))
@@ -157,7 +158,7 @@ else:
         
         
         step += 1
-        print(step, task_index, l, ac)
+        print(step, task_index, l, ac, time.time())
         sys.stdout.flush()
 
     
