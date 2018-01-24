@@ -11,7 +11,6 @@ from core.run_session import run_session
 
 import random as rd
 import time
-from IPython import display
 
 from helper_functions.datamanagement import H5File
 import os
