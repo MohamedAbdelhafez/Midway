@@ -830,6 +830,6 @@ class TensorflowState:
                     self.init_utilities()
 
 
-                    print ("Graph built!")
+                    print ("Graph " +str(self.task_index) + " built!")
         
         return graph
