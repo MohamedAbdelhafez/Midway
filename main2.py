@@ -145,7 +145,7 @@ else:
 
         all_train, all_train_labels = unison_shuffled_copies(tr, trl)
         all_test, all_test_labels = unison_shuffled_copies(tes, tesl)
-        #sess.run(train_step, feed_dict={x: all_train, y_: all_train_labels})
+        sess.run(train_step, feed_dict={x: all_train, y_: all_train_labels})
         
         print("trying session")
         sys.stdout.flush()
