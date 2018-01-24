@@ -135,7 +135,7 @@ else:
         all_test_labels = np.concatenate((g_test_labels[start_test:end_test],e_test_labels[start_test:end_test]))
         return all_train, all_train_labels, all_test, all_test_labels
     
-    iterations = 1
+    iterations = 10
     num_batches = len(hosts)-1
     print ("entering iterations")
     for i in range(iterations):
@@ -145,7 +145,7 @@ else:
 
         all_train, all_train_labels = unison_shuffled_copies(tr, trl)
         all_test, all_test_labels = unison_shuffled_copies(tes, tesl)
-        sess.run(train_step, feed_dict={x: all_train, y_: all_train_labels})
+        #sess.run(train_step, feed_dict={x: all_train, y_: all_train_labels})
         
         print("trying session")
         sys.stdout.flush()
