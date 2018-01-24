@@ -109,7 +109,8 @@ else:
         sync_replicas_hook = opt.make_session_run_hook(is_chief)
         correct_prediction = tf.equal(tf.argmax(yt, 1), tf.argmax(yt_, 1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        init_op = tf.initialize_all_variables()
+        
+        init_op = tf.global_variables_initializer()
         print("---Variables initialized---")
 
         
@@ -145,8 +146,7 @@ else:
         all_train, all_train_labels = unison_shuffled_copies(tr, trl)
         all_test, all_test_labels = unison_shuffled_copies(tes, tesl)
         sess.run(train_step, feed_dict={x: all_train, y_: all_train_labels})
-        correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        
         print("trying session")
         sys.stdout.flush()
         _,loss, ac, res, inpu  = (sess.run([train_step, loss, accuracy,y,y_], feed_dict={x: all_train,
