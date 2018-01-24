@@ -107,8 +107,8 @@ else:
                                 total_num_replicas=len(hosts)-1)
         train_step = opt.minimize(loss, global_step = global_step)
         sync_replicas_hook = opt.make_session_run_hook(is_chief)
-        correct_prediction = tf.equal(tf.argmax(yt, 1), tf.argmax(yt_, 1))
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        #correct_prediction = tf.equal(tf.argmax(yt, 1), tf.argmax(yt_, 1))
+        #accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         
         init_op = tf.global_variables_initializer()
         print("---Variables initialized---")
@@ -149,7 +149,7 @@ else:
         
         print("Iteration "+ str(i))
         sys.stdout.flush()
-        _,loss, ac  = (sess.run([train_step, loss, accuracy], feed_dict={x: all_train,
+        _,loss  = (sess.run([train_step, loss], feed_dict={x: all_train,
                                           y_: all_train_labels, xt: all_test, yt_: all_test_labels}))
 
 
@@ -157,7 +157,7 @@ else:
         
         
         step += 1
-        print(step, task_index, loss, ac)
+        print(step, task_index, loss)
         sys.stdout.flush()
 
     
