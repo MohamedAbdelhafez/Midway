@@ -5,7 +5,7 @@ import numpy as np
 import scipy.linalg as la
 from core.TensorflowState import TensorflowState
 from core.SystemParameters import SystemParameters
-from core.Convergence import Convergence
+#from core.Convergence import Convergence
 from core.run_session import run_session
 
 
