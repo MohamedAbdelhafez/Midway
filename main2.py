@@ -125,7 +125,7 @@ else:
                                      init_op=init_op,
                                      #summary_op=summary_op,
                                      summary_op=None,
-                                     recovery_wait_secs =1,
+                                     recovery_wait_secs =10,
                                      logdir="/tmp",
                                      saver=tf.train.Saver(),
                                      global_step=global_step,
