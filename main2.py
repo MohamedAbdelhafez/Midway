@@ -85,17 +85,14 @@ else:
     print ("Worker running")
     is_chief = task_index == 0
     
-    with tf.device("/job:ps/task:0"):
+    with tf.device(tf.train.replica_device_setter( worker_device="/job:worker/task:%d" % task_index, cluster=cluster)):
         rate = 0.5
         
         W = tf.Variable(tf.zeros([steps, 2]))
         b = tf.Variable(tf.zeros([2]))
         m = tf.Variable(tf.zeros([steps,2]))
-    with tf.device(tf.train.replica_device_setter( worker_device="/job:worker/task:%d" % task_index, cluster=cluster)):
-        global_step = tf.get_variable('global_step', [], 
-                                      initializer = tf.constant_initializer(0), 
-                                      trainable = False,
-                                      dtype = tf.int32)
+    
+        global_step = tf.Variable(0, name="global_step", trainable=False)
         x = tf.placeholder(tf.float32, [None, steps])
         xt = tf.placeholder(tf.float32, [None, steps])
         yt = tf.matmul(tf.square(xt),m) + tf.matmul(xt, W) + b
