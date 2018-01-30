@@ -125,7 +125,7 @@ else:
                                      init_op=init_op,
                                      #summary_op=summary_op,
                                      summary_op=None,
-                                     recovery_wait_secs =10,
+                                     recovery_wait_secs =0.1,
                                      logdir="/tmp",
                                      saver=tf.train.Saver(),
                                      global_step=global_step,
@@ -156,7 +156,7 @@ else:
     num_batches = len(hosts)-1
     print ("entering iterations")
     
-    with sv.prepare_or_wait_for_session(server.target) as sess:
+    with sv.prepare_or_wait_for_session(server.target, config =sess_config) as sess:
         if task_index == 0:
                 sv.start_queue_runners(sess, [chief_queue_runner])
                 sess.run(init_token_op)
