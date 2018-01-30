@@ -465,8 +465,8 @@ class TensorflowState:
             #self.optimizer = self.opt.apply_gradients(self.new_grad, global_step = self.global_step)
             #self.optimizer = self.opt.apply_gradients(self.grad, global_step = self.global_step)
             self.optimizer = self.opt.minimize(self.reg_loss, global_step = self.global_step)
-            self.init_token_op = opt.get_init_tokens_op()
-            self.chief_queue_runner = opt.get_chief_queue_runner()
+            self.init_token_op = self.opt.get_init_tokens_op()
+            self.chief_queue_runner = self.opt.get_chief_queue_runner()
         else:
             self.optimizer = self.opt.apply_gradients(self.grad)
        
