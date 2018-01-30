@@ -100,7 +100,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                              recovery_wait_secs=1,
                              global_step=tfs.global_step)
         
-        with sv.prepare_or_wait_for_session() as sess:
+        with sv.prepare_or_wait_for_session(tfs.server.target) as sess:
             
             sv.start_queue_runners(sess, [chief_queue_runner])
             sess.run(init_tokens_op)
