@@ -109,6 +109,8 @@ else:
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         
         init_op = tf.global_variables_initializer()
+        init_token_op = opt.get_init_tokens_op()
+        chief_queue_runner = opt.get_chief_queue_runner()
         print("---Variables initialized---")
 
         
@@ -124,6 +126,8 @@ else:
                                      #summary_op=summary_op,
                                      summary_op=None,
                                      recovery_wait_secs =1,
+                                     logdir="/tmp",
+                                     saver=tf.train.Saver(),
                                      global_step=global_step,
                                      save_model_secs=60)
     step = 0
@@ -152,7 +156,10 @@ else:
     num_batches = len(hosts)-1
     print ("entering iterations")
     
-    with sv.managed_session(server.target) as sess:
+    with sv.prepare_or_wait_for_session(server.target) as sess:
+        if task_index == 0:
+                sv.start_queue_runners(sess, [chief_queue_runner])
+                sess.run(init_token_op)
     
         for i in range(iterations):
             tr,trl,tes,tesl = batch_generator(task_index, num_batches,  g_train, e_train, g_train_labels, e_train_labels, g_test, e_test, g_test_labels, e_test_labels)
