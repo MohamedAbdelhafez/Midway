@@ -1,5 +1,5 @@
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+#os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import numpy as np
 import tensorflow as tf
 import math
@@ -463,7 +463,8 @@ class TensorflowState:
         
         if self.sys_para.traj:
             #self.optimizer = self.opt.apply_gradients(self.new_grad, global_step = self.global_step)
-            self.optimizer = self.opt.apply_gradients(self.grad, global_step = self.global_step)
+            #self.optimizer = self.opt.apply_gradients(self.grad, global_step = self.global_step)
+            self.optimizer = self.opt.minimize(self.reg_loss, global_step = self.global_step)
         else:
             self.optimizer = self.opt.apply_gradients(self.grad)
        
