@@ -800,7 +800,7 @@ class TensorflowState:
             else:
                 print ("Worker running")
                 self.is_chief = self.task_index == 0
-                with tf.device("/job:ps/cpu:0"):
+                with tf.device("/job:ps/task:0"):
                     self.init_defined_functions()
                     self.init_variables()
                 
