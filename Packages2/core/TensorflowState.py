@@ -800,7 +800,7 @@ class TensorflowState:
             else:
                 print ("Worker running")
                 self.is_chief = self.task_index == 0
-                with tf.device("/job:ps/task:0"):
+                with tf.device("/job:ps/cpu:0"):
                     self.init_defined_functions()
                     self.init_variables()
                 
@@ -808,7 +808,9 @@ class TensorflowState:
                     if not self.sys_para.traj:
                         self.init_tf_propagators()
                     self.init_tf_ops_weight()
-                with tf.device(tf.train.replica_device_setter( worker_device="/job:worker/task:%d" % self.task_index, cluster=self.cluster)):
+                
+                    
+                with tf.device(tf.train.replica_device_setter( ps_device="/job:ps/cpu:0", worker_device="/job:worker/task:%d" % self.task_index, cluster=self.cluster)):
                     self.global_step = tf.get_variable('global_step', [], 
                                       initializer = tf.constant_initializer(0), 
                                       trainable = False,
