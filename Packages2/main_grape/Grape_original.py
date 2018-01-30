@@ -91,8 +91,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
         sess = tf.train.MonitoredTrainingSession(master=tfs.server.target, config = config, is_chief=tfs.is_chief,
                                              hooks=[tfs.sync_replicas_hook])
         itera = 0
-        if tfs.is_chief:
-            time.sleep(5)
+        
 
         traj_num = sys_para.trajectories
         max_traj = 1000
@@ -110,8 +109,9 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             sys.stdout.flush()
             feed_dict = {tfs.learning_rate: learning_rate, tfs.start: np.zeros([num_psi0]), tfs.end: np.ones([num_psi0]), tfs.num_trajs:num_traj_batch*np.ones([num_psi0])}
             #norms, expects, l1d,l2d,  quad, l1, l2, inter_vecs = sess.run([tfs.norms, tfs.expectations, tfs.Il1d, tfs.Il2d,tfs.quad, tfs.Il1, tfs.Il2, tfs.inter_vecs], feed_dict=feed_dict)
-            _ = sess.run([tfs.optimizer], feed_dict=feed_dict)
+            _, step = sess.run([tfs.optimizer,tfs.global_step], feed_dict=feed_dict)
             #print (np.square(l1 + l2))
+            print (step)
             sys.stdout.flush()
         
 
