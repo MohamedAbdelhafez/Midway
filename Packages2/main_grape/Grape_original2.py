@@ -18,7 +18,7 @@ from tensorflow.python.framework import function
 from tensorflow.python.framework import ops
 
 
-def get_inner_product(sys_para,psi1,psi2):
+def get_inner_product(sys_para,psi1,psi2, num_vecs):
     #Take 2 states psi1,psi2, calculate their overlap, for single vector
     state_num=sys_para.state_num
 
@@ -56,7 +56,7 @@ def get_loss_list(sys_para,psi1,psi2):
     loss_list = tf.add(ac_bd,bc_ad)
     return loss_list
 
-def get_inner_product_2D(sys_para,psi1,psi2):
+def get_inner_product_2D(sys_para,psi1,psi2, num_vecs):
     #Take 2 states psi1,psi2, calculate their overlap, for arbitrary number of vectors
     # psi1 and psi2 are shaped as (2*state_num, number of vectors)
     state_num=sys_para.state_num
@@ -80,7 +80,7 @@ def get_inner_product_2D(sys_para,psi1,psi2):
         norm = (tf.add(reals,imags))/(tf.cast(num_vecs,tf.float32))
     return norm
 
-def get_inner_product_3D(sys_para,psi1,psi2):
+def get_inner_product_3D(sys_para,psi1,psi2, num_vecs):
     #Take 2 states psi1,psi2, calculate their overlap, for arbitrary number of vectors and timesteps
     # psi1 and psi2 are shaped as (2*state_num, time_steps, number of vectors)
     state_num=sys_para.state_num
@@ -683,7 +683,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             
                 final_vecs = tf.matmul(final_state, packed_initial_vectors)
 
-                loss = 1-get_inner_product_2D(sys_para, final_vecs,target_vecs)
+                loss = 1-get_inner_product_2D(sys_para, final_vecs,target_vecs, num_vecs)
 
             else:
                 #loss = tf.constant(0.0, dtype = tf.float32)
@@ -707,7 +707,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
 
 
                 
-                unitary_scale = get_inner_product_2D(sys_para, final_state,final_state)
+                unitary_scale = get_inner_product_2D(sys_para, final_state,final_state, num_vecs)
 
 
             reg_loss = get_reg_loss()
