@@ -152,7 +152,7 @@ else:
         all_test_labels = np.concatenate((g_test_labels[start_test:end_test],e_test_labels[start_test:end_test]))
         return all_train, all_train_labels, all_test, all_test_labels
     
-    iterations = 10
+    iterations = 100
     num_batches = len(hosts)-1
     print ("entering iterations")
     
