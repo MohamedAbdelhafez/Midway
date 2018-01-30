@@ -90,24 +90,28 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
     with graph.as_default():
         
         
-        chief_queue_runner = tfs.opt.get_chief_queue_runner()
-        init_tokens_op = tfs.opt.get_init_tokens_op()
+    
+        
+            
+            
+            
+            
 
         sv = tf.train.Supervisor(is_chief=tfs.is_chief,
                              logdir="/tmp",
                              saver=tf.train.Saver(),
-                             init_op=tf.initialize_all_variables(),
+                             init_op=tfs.init_op,
                              recovery_wait_secs=1,
                              global_step=tfs.global_step)
         
         with sv.prepare_or_wait_for_session(tfs.server.target) as sess:
             
-            sv.start_queue_runners(sess, [chief_queue_runner])
-            sess.run(init_tokens_op)
-
+            
             itera = 0
             if tfs.is_chief:
-                time.sleep(5)
+                sv.start_queue_runners(sess, [tfs.chief_queue_runner])
+                sess.run(tfs.init_tokens_op)
+
 
             traj_num = sys_para.trajectories
             max_traj = 1000
@@ -118,16 +122,16 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             jump_traj = np.sum(needed_traj)
             num_batches = len(tfs.hosts)-1
             num_traj_batch = int(traj_num/num_batches)
-            print ("entering iterations")
+            print ("Entering iterations")
             for ii in range(convergence['max_iterations']):
                 learning_rate = float(convergence['rate']) * np.exp(-float(ii) / convergence['learning_rate_decay'])
                 print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(tfs.task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
                 sys.stdout.flush()
                 feed_dict = {tfs.learning_rate: learning_rate, tfs.start: np.zeros([num_psi0]), tfs.end: np.ones([num_psi0]), tfs.num_trajs:num_traj_batch*np.ones([num_psi0])}
                 #norms, expects, l1d,l2d,  quad, l1, l2, inter_vecs = sess.run([tfs.norms, tfs.expectations, tfs.Il1d, tfs.Il2d,tfs.quad, tfs.Il1, tfs.Il2, tfs.inter_vecs], feed_dict=feed_dict)
-                _, step = sess.run([tfs.optimizer, tfs.global_step], feed_dict=feed_dict)
+                _ = sess.run([tfs.optimizer], feed_dict=feed_dict)
                 #print (np.square(l1 + l2))
-                print (step)
+              
                 sys.stdout.flush()
 
 
