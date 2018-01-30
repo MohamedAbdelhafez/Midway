@@ -123,7 +123,7 @@ else:
                                      init_op=init_op,
                                      #summary_op=summary_op,
                                      summary_op=None,
-                                     
+                                     recovery_wait_secs =1,
                                      global_step=global_step,
                                      save_model_secs=60)
     step = 0
@@ -152,7 +152,7 @@ else:
     num_batches = len(hosts)-1
     print ("entering iterations")
     
-    with sv.managed_session(server.target, config = sess_config) as sess:
+    with sv.managed_session(server.target) as sess:
     
         for i in range(iterations):
             tr,trl,tes,tesl = batch_generator(task_index, num_batches,  g_train, e_train, g_train_labels, e_train_labels, g_test, e_test, g_test_labels, e_test_labels)
