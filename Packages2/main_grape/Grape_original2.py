@@ -19,7 +19,103 @@ from tensorflow.python.framework import ops
 
 
 
+def get_avgd_inner_product ( psi1, psi2, start, end):
+    state_num=sys_para.state_num
 
+
+    psi_1_real = (psi1[0:state_num,start:end])
+    psi_1_imag = (psi1[state_num:2*state_num,start:end])
+    psi_2_real = (psi2[0:state_num,start:end])
+    psi_2_imag = (psi2[state_num:2*state_num,start:end])
+    # psi1 has a+ib, psi2 has c+id, we wanna get Sum ((ac+bd) + i (bc-ad)) magnitude
+    with tf.name_scope('inner_product'):
+        ac = tf.reduce_sum(tf.multiply(psi_1_real,psi_2_real),0)
+        bd = tf.reduce_sum(tf.multiply(psi_1_imag,psi_2_imag),0)
+        bc = tf.reduce_sum(tf.multiply(psi_1_imag,psi_2_real),0)
+        ad = tf.reduce_sum(tf.multiply(psi_1_real,psi_2_imag),0)
+
+        ac_bd = tf.add(ac,bd)
+        bc_ad = tf.subtract(bc,ad)
+        reals = tf.reduce_sum(ac_bd)/tf.cast((end-start), tf.float32) # first trace inner product of all vectors, then squared
+        imags = tf.reduce_sum(bc_ad)/tf.cast((end-start), tf.float32)
+
+    return reals, imags
+
+def expect ( op, psis):
+    result = []
+    psis2 = tf.matmul(tf.cast(op,tf.float32),psis)
+    if num_trajs[0] !=0:
+
+        expect1 = get_avgd_inner_product (psis, psis2, 0, num_trajs[0])
+        if not sys_para.do_all:
+            result.append(expect1)
+    else:
+        expect1 = 0
+    if num_trajs[1] !=0:
+        expect2 = get_avgd_inner_product (psis, psis2, num_trajs[0], num_trajs[0] + num_trajs[1])
+        if not sys_para.do_all:
+            result.append(expect2)
+    else:
+        expect2 = 0
+    if sys_para.do_all:
+        return expect1, expect2
+    else:
+        return tf.stack(result)
+
+def normalize(psi):
+    state_num=sys_para.state_num
+    new_norms = tf.reshape(get_norms(psi),[num_vecs])
+    weights = 1/tf.sqrt(new_norms)
+    x = []
+    for ii in range (2*state_num):
+        x.append(weights)
+    return tf.multiply(psi,tf.stack(x))
+
+
+
+
+def get_norms(psi):
+    state_num=sys_para.state_num
+    psi1 = tf.reshape(psi,[2*state_num,num_vecs])
+    return tf.reduce_sum(tf.square(psi1),0)
+
+def get_norm(psi):
+    state_num=sys_para.state_num
+    psi1 = tf.reshape(psi,[2*state_num,1])
+    return tf.reduce_sum(tf.square(psi1),0)
+def get_one_random(start,end,index):
+    vec_type = tf.constant(0)
+    sums = []
+    s = 0
+    for jj in range (len(sys_para.initial_vectors)):
+        #create a list of their summed probabilities
+        s=s+num_trajs[jj]
+        sums=tf.concat([sums,tf.reshape(s,[1])],0)
+
+    r2 = tf.cast(index,tf.int32)
+    rvector=r2 * tf.ones_like(sums)
+    cond2= tf.greater_equal(sums,rvector)
+    b=tf.where(cond2)
+    final =tf.reshape(b[0,:],[])
+    return tf.random_uniform([1],tf.gather(start,final),tf.gather(end,final))
+
+
+
+def get_random(start,end,length=1):
+
+    #Returns a random number between 0 & 1 to tell jumps when to occur
+    ii =0
+    rand = []
+    for initial_vector in sys_para.initial_vectors:
+        new = tf.random_uniform([num_trajs[ii]],start[ii],end[ii])
+        if rand == []:
+            rand = new
+        else:
+            rand = tf.concat([rand,new],0)
+        ii = ii+1
+
+    #rand=tf.random_uniform([length],start,end)
+    return rand
 
 def divide(needed,max_traj):
     returned = []
