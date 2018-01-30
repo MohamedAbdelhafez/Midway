@@ -18,8 +18,90 @@ from tensorflow.python.framework import function
 from tensorflow.python.framework import ops
 
 
+def get_inner_product(sys_para,psi1,psi2):
+    #Take 2 states psi1,psi2, calculate their overlap, for single vector
+    state_num=sys_para.state_num
 
-def get_avgd_inner_product ( psi1, psi2, start, end):
+    psi_1_real = (psi1[0:state_num])
+    psi_1_imag = (psi1[state_num:2*state_num])
+    psi_2_real = (psi2[0:state_num])
+    psi_2_imag = (psi2[state_num:2*state_num])
+    # psi1 has a+ib, psi2 has c+id, we wanna get Sum ((ac+bd) + i (bc-ad)) magnitude
+    with tf.name_scope('inner_product'):
+        ac = tf.multiply(psi_1_real,psi_2_real)
+        bd = tf.multiply(psi_1_imag,psi_2_imag)
+        bc = tf.multiply(psi_1_imag,psi_2_real)
+        ad = tf.multiply(psi_1_real,psi_2_imag)
+        reals = tf.square(tf.add(tf.reduce_sum(ac),tf.reduce_sum(bd)))
+        imags = tf.square(tf.subtract(tf.reduce_sum(bc),tf.reduce_sum(ad)))
+        norm = tf.add(reals,imags)
+    return norm
+
+def get_loss_list(sys_para,psi1,psi2):
+    state_num=sys_para.state_num
+
+    psi_1_real = (psi1[0:state_num,:])
+    psi_1_imag = (psi1[state_num:2*state_num,:])
+    psi_2_real = (psi2[0:state_num,:])
+    psi_2_imag = (psi2[state_num:2*state_num,:])
+    # psi1 has a+ib, psi2 has c+id, we wanna get Sum ((ac+bd) + i (bc-ad)) magnitude
+
+    ac = tf.reduce_sum(tf.multiply(psi_1_real,psi_2_real),0)
+    bd = tf.reduce_sum(tf.multiply(psi_1_imag,psi_2_imag),0)
+    bc = tf.reduce_sum(tf.multiply(psi_1_imag,psi_2_real),0)
+    ad = tf.reduce_sum(tf.multiply(psi_1_real,psi_2_imag),0)
+    ac_bd = tf.square(tf.add(ac,bd))
+    bc_ad = tf.square(tf.subtract(bc,ad))
+
+    loss_list = tf.add(ac_bd,bc_ad)
+    return loss_list
+
+def get_inner_product_2D(sys_para,psi1,psi2):
+    #Take 2 states psi1,psi2, calculate their overlap, for arbitrary number of vectors
+    # psi1 and psi2 are shaped as (2*state_num, number of vectors)
+    state_num=sys_para.state_num
+
+
+    psi_1_real = (psi1[0:state_num,:])
+    psi_1_imag = (psi1[state_num:2*state_num,:])
+    psi_2_real = (psi2[0:state_num,:])
+    psi_2_imag = (psi2[state_num:2*state_num,:])
+    # psi1 has a+ib, psi2 has c+id, we wanna get Sum ((ac+bd) + i (bc-ad)) magnitude
+    with tf.name_scope('inner_product'):
+        ac = tf.reduce_sum(tf.multiply(psi_1_real,psi_2_real),0)
+        bd = tf.reduce_sum(tf.multiply(psi_1_imag,psi_2_imag),0)
+        bc = tf.reduce_sum(tf.multiply(psi_1_imag,psi_2_real),0)
+        ad = tf.reduce_sum(tf.multiply(psi_1_real,psi_2_imag),0)
+
+        ac_bd = tf.square(tf.add(ac,bd))
+        bc_ad = tf.square(tf.subtract(bc,ad))
+        reals = tf.reduce_sum(ac_bd) # first trace inner product of all vectors, then squared
+        imags = tf.reduce_sum(bc_ad)
+        norm = (tf.add(reals,imags))/(tf.cast(num_vecs,tf.float32))
+    return norm
+
+def get_inner_product_3D(sys_para,psi1,psi2):
+    #Take 2 states psi1,psi2, calculate their overlap, for arbitrary number of vectors and timesteps
+    # psi1 and psi2 are shaped as (2*state_num, time_steps, number of vectors)
+    state_num=sys_para.state_num
+
+    psi_1_real = (psi1[0:state_num,:])
+    psi_1_imag = (psi1[state_num:2*state_num,:])
+    psi_2_real = (psi2[0:state_num,:])
+    psi_2_imag = (psi2[state_num:2*state_num,:])
+    # psi1 has a+ib, psi2 has c+id, we wanna get Sum ((ac+bd) + i (bc-ad)) magnitude
+    with tf.name_scope('inner_product'):
+        ac = tf.reduce_sum(tf.multiply(psi_1_real,psi_2_real),0)
+        bd = tf.reduce_sum(tf.multiply(psi_1_imag,psi_2_imag),0)
+        bc = tf.reduce_sum(tf.multiply(psi_1_imag,psi_2_real),0)
+        ad = tf.reduce_sum(tf.multiply(psi_1_real,psi_2_imag),0)
+        reals = tf.reduce_sum(tf.square(tf.reduce_sum(tf.add(ac,bd),1)))
+        # first trace inner product of all vectors, then squared, then sum contribution of all time steps
+        imags = tf.reduce_sum(tf.square(tf.reduce_sum(tf.subtract(bc,ad),1)))
+        norm = (tf.add(reals,imags))/(len(sys_para.states_concerned_list)**2)
+    return norm
+
+def get_avgd_inner_product ( sys_para, psi1, psi2, start, end):
     state_num=sys_para.state_num
 
 
@@ -41,18 +123,18 @@ def get_avgd_inner_product ( psi1, psi2, start, end):
 
     return reals, imags
 
-def expect ( op, psis):
+def expect (sys_para,  op, psis):
     result = []
     psis2 = tf.matmul(tf.cast(op,tf.float32),psis)
     if num_trajs[0] !=0:
 
-        expect1 = get_avgd_inner_product (psis, psis2, 0, num_trajs[0])
+        expect1 = get_avgd_inner_product (sys_para, psis, psis2, 0, num_trajs[0])
         if not sys_para.do_all:
             result.append(expect1)
     else:
         expect1 = 0
     if num_trajs[1] !=0:
-        expect2 = get_avgd_inner_product (psis, psis2, num_trajs[0], num_trajs[0] + num_trajs[1])
+        expect2 = get_avgd_inner_product (sys_para, psis, psis2, num_trajs[0], num_trajs[0] + num_trajs[1])
         if not sys_para.do_all:
             result.append(expect2)
     else:
@@ -62,9 +144,9 @@ def expect ( op, psis):
     else:
         return tf.stack(result)
 
-def normalize(psi):
+def normalize(sys_para, psi):
     state_num=sys_para.state_num
-    new_norms = tf.reshape(get_norms(psi),[num_vecs])
+    new_norms = tf.reshape(get_norms(sys_para, psi),[num_vecs])
     weights = 1/tf.sqrt(new_norms)
     x = []
     for ii in range (2*state_num):
@@ -74,16 +156,16 @@ def normalize(psi):
 
 
 
-def get_norms(psi):
+def get_norms(sys_para, psi):
     state_num=sys_para.state_num
     psi1 = tf.reshape(psi,[2*state_num,num_vecs])
     return tf.reduce_sum(tf.square(psi1),0)
 
-def get_norm(psi):
+def get_norm(sys_para, psi):
     state_num=sys_para.state_num
     psi1 = tf.reshape(psi,[2*state_num,1])
     return tf.reduce_sum(tf.square(psi1),0)
-def get_one_random(start,end,index):
+def get_one_random(sys_para, start,end,index):
     vec_type = tf.constant(0)
     sums = []
     s = 0
@@ -101,7 +183,7 @@ def get_one_random(start,end,index):
 
 
 
-def get_random(start,end,length=1):
+def get_random(sys_para, start,end,length=1):
 
     #Returns a random number between 0 & 1 to tell jumps when to occur
     ii =0
@@ -446,7 +528,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             old_psi = psi0
             new_psi = psi0
             norms = tf.ones([num_vecs],dtype = tf.float32)
-            r=get_random(start,end,num_vecs)
+            r=get_random(sys_para, start,end,num_vecs)
             jumps=tf.zeros([num_vecs])
             operator = tf_c_ops[0] # temporary
             expects = []
@@ -459,7 +541,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             for ii in np.arange(0,sys_para.steps):
                 old_psi = new_psi        
                 new_psi = matvecexp_op(H_weights[:,ii],tf_matrix_list,old_psi)
-                new_norms = tf.reshape(get_norms(new_psi),[num_vecs])
+                new_norms = tf.reshape(get_norms(sys_para, new_psi),[num_vecs])
 
                 norms = tf.multiply(norms,new_norms)
                 all_norms.append(norms)
@@ -517,7 +599,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                     else:
                         propagator2 = tf.reshape(tf_c_ops,[2*sys_para.state_num,2*sys_para.state_num])
                     inter_vec_temp2 = tf.matmul(propagator2,tf.reshape(vector,[2*sys_para.state_num,1]))
-                    norm2 = get_norm(inter_vec_temp2)
+                    norm2 = get_norm(sys_para, inter_vec_temp2)
                     inter_vec_temp2 = inter_vec_temp2 / tf.sqrt(norm2)
 
                     #delta = tf.reshape(inter_vec_temp2 - tf.gather(tf.transpose(new),index),[2*sys_para.state_num])
@@ -556,12 +638,12 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 all_jumps.append(wh)
 
 
-                new_psi = normalize(new_psi)
+                new_psi = normalize(sys_para, new_psi)
 
                 inter_vecs_list.append(new_psi)
                 if sys_para.expect:
 
-                    expects.append(expect(expect_op, new_psi))
+                    expects.append(expect(sys_para, expect_op, new_psi))
 
             inter_vecs_packed = tf.stack(inter_vecs_list, axis=1)
             inter_vecs = inter_vecs_packed
@@ -603,7 +685,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             
                 final_vecs = tf.matmul(final_state, packed_initial_vectors)
 
-                loss = 1-get_inner_product_2D(final_vecs,target_vecs)
+                loss = 1-get_inner_product_2D(sys_para, final_vecs,target_vecs)
 
             else:
                 #loss = tf.constant(0.0, dtype = tf.float32)
@@ -615,27 +697,19 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 accelerate = tf.ones([sys_para.steps])
                 #
                 if sys_para.expect:
-                    if sys_para.do_all:
-
-                        Il = tf.reduce_sum(tf.multiply((tf.subtract(expectations[0,:,0] , expectations[1,:,0])),accelerate))
-                        Ild = tf.gradients(Il, [ops_weight_base])[0]
-                        loss = - tf.square(Il)
-                        quad = tf.gradients(loss, [ops_weight_base])[0]
-                    else: 
-                        Il1 = tf.reduce_sum(expectations[:,0,0])  
-                        Il2 = -tf.reduce_sum(expectations[:,1,0])
-                        Il = Il1 + Il2
-                        Il1d = tf.gradients(Il1, [ops_weight_base])[0]
-                        Il2d = tf.gradients(Il2, [ops_weight_base])[0]
-                        loss = - tf.square(Il)
-                        quad = tf.gradients(loss, [ops_weight_base])[0]
+                    
+                    Il1 = tf.reduce_sum(expectations[:,0,0])  
+                    Il2 = -tf.reduce_sum(expectations[:,1,0])
+                    Il = Il1 + Il2
+                    Il1d = tf.gradients(Il1, [ops_weight_base])[0]
+                    Il2d = tf.gradients(Il2, [ops_weight_base])[0]
+                    loss = - tf.square(Il)
+                    quad = tf.gradients(loss, [ops_weight_base])[0]
 
 
 
-                else:
-                    loss = 1-get_inner_product_2D(final_state,target_vecs)
-                    loss_list = get_loss_list(final_state,target_vecs)
-                unitary_scale = get_inner_product_2D(final_state,final_state)
+                
+                unitary_scale = get_inner_product_2D(sys_para, final_state,final_state)
 
 
             reg_loss = get_reg_loss()
