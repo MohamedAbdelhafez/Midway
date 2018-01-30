@@ -5,7 +5,7 @@ import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,currentdir+"/Packages2") 
-from main_grape.Grape_original import Grape
+from main_grape.Grape_original2 import Grape
 
 #Defining time scales
 total_time = 5
