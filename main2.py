@@ -116,9 +116,20 @@ else:
         allow_soft_placement=True,
         log_device_placement=False,
         device_filters=["/job:ps", "/job:worker/task:%d" % task_index])
+    
+    
+    sv = tf.train.Supervisor(is_chief=(task_index == 0),
+                                     
+                                     init_op=init_op,
+                                     #summary_op=summary_op,
+                                     summary_op=None,
+                                     
+                                     global_step=global_step,
+                                     save_model_secs=60)
     step = 0
-    sess = tf.train.MonitoredTrainingSession(master=server.target, is_chief=is_chief,
-                                         hooks=[sync_replicas_hook], config = sess_config)
+    #sess = tf.train.MonitoredTrainingSession(master=server.target, is_chief=is_chief,
+                                         #hooks=[sync_replicas_hook], config = sess_config)
+     
     def unison_shuffled_copies(a, b):
         assert len(a) == len(b)
         p = np.random.permutation(len(a))
@@ -140,27 +151,30 @@ else:
     iterations = 10
     num_batches = len(hosts)-1
     print ("entering iterations")
-    for i in range(iterations):
-        tr,trl,tes,tesl = batch_generator(task_index, num_batches,  g_train, e_train, g_train_labels, e_train_labels, g_test, e_test, g_test_labels, e_test_labels)
-        
-        
-
-        all_train, all_train_labels = unison_shuffled_copies(tr, trl)
-        all_test, all_test_labels = unison_shuffled_copies(tes, tesl)
-        #sess.run(train_step, feed_dict={x: all_train, y_: all_train_labels})
-        
-        #print("Iteration "+ str(i))
-        sys.stdout.flush()
-        _,l,ac  = (sess.run([train_step, loss,accuracy], feed_dict={x: all_train,
-                                          y_: all_train_labels, xt: all_test, yt_: all_test_labels}))
+    
+    with sv.managed_session(server.target, config = sess_config) as sess:
+    
+        for i in range(iterations):
+            tr,trl,tes,tesl = batch_generator(task_index, num_batches,  g_train, e_train, g_train_labels, e_train_labels, g_test, e_test, g_test_labels, e_test_labels)
 
 
 
-        
-        
-        step += 1
-        print(step, task_index, l, ac, time.time())
-        sys.stdout.flush()
+            all_train, all_train_labels = unison_shuffled_copies(tr, trl)
+            all_test, all_test_labels = unison_shuffled_copies(tes, tesl)
+            #sess.run(train_step, feed_dict={x: all_train, y_: all_train_labels})
+
+            #print("Iteration "+ str(i))
+            sys.stdout.flush()
+            _,l,ac  = (sess.run([train_step, loss,accuracy], feed_dict={x: all_train,
+                                              y_: all_train_labels, xt: all_test, yt_: all_test_labels}))
+
+
+
+
+
+            step += 1
+            print(step, task_index, l, ac, time.time())
+            sys.stdout.flush()
 
     
     
