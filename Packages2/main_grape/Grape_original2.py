@@ -123,7 +123,7 @@ def get_avgd_inner_product ( sys_para, psi1, psi2, start, end):
 
     return reals, imags
 
-def expect (sys_para,  op, psis):
+def expect (sys_para, num_trajs,  op, psis):
     result = []
     psis2 = tf.matmul(tf.cast(op,tf.float32),psis)
     if num_trajs[0] !=0:
@@ -165,7 +165,7 @@ def get_norm(sys_para, psi):
     state_num=sys_para.state_num
     psi1 = tf.reshape(psi,[2*state_num,1])
     return tf.reduce_sum(tf.square(psi1),0)
-def get_one_random(sys_para, start,end,index):
+def get_one_random(sys_para, num_trajs, start,end,index):
     vec_type = tf.constant(0)
     sums = []
     s = 0
@@ -183,7 +183,7 @@ def get_one_random(sys_para, start,end,index):
 
 
 
-def get_random(sys_para, start,end,length=1):
+def get_random(sys_para,num_trajs,  start,end,length=1):
 
     #Returns a random number between 0 & 1 to tell jumps when to occur
     ii =0
@@ -528,7 +528,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             old_psi = psi0
             new_psi = psi0
             norms = tf.ones([num_vecs],dtype = tf.float32)
-            r=get_random(sys_para, start,end,num_vecs)
+            r=get_random(sys_para,num_trajs,  start,end,num_vecs)
             jumps=tf.zeros([num_vecs])
             operator = tf_c_ops[0] # temporary
             expects = []
@@ -643,7 +643,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 inter_vecs_list.append(new_psi)
                 if sys_para.expect:
 
-                    expects.append(expect(sys_para, expect_op, new_psi))
+                    expects.append(expect(sys_para, num_trajs, expect_op, new_psi))
 
             inter_vecs_packed = tf.stack(inter_vecs_list, axis=1)
             inter_vecs = inter_vecs_packed
