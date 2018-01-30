@@ -110,7 +110,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             itera = 0
             if tfs.is_chief:
                 sv.start_queue_runners(sess, [tfs.chief_queue_runner])
-                sess.run(tfs.init_tokens_op)
+                sess.run(tfs.init_token_op)
 
 
             traj_num = sys_para.trajectories
