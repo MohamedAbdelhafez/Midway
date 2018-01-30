@@ -529,7 +529,6 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             new_psi = psi0
             norms = tf.ones([num_vecs],dtype = tf.float32)
             r=get_random(sys_para,num_trajs,  start,end,num_vecs)
-            jumps=tf.zeros([num_vecs])
             operator = tf_c_ops[0] # temporary
             expects = []
             inter_vecs_list=[]
@@ -679,7 +678,6 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             packed = inter_vecs_packed
             print ("Trajectories Initialized")
        
-            jumps = tf.stack(jumps)
                 
             if sys_para.state_transfer == False:
             
