@@ -710,7 +710,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 unitary_scale = get_inner_product_2D(sys_para, final_state,final_state, num_vecs)
 
 
-            reg_loss = get_reg_loss()
+            reg_loss = loss
 
             print ("Training loss initialized.")
             learning_rate = tf.placeholder(tf.float32,shape=[])
