@@ -810,7 +810,7 @@ class TensorflowState:
                     self.init_tf_ops_weight()
                 
                     
-                with tf.device(tf.train.replica_device_setter( ps_device="/job:ps/cpu:0", worker_device="/job:worker/task:%d" % self.task_index, cluster=self.cluster)):
+                with tf.device(tf.train.replica_device_setter(  worker_device="/job:worker/task:%d" % self.task_index, cluster=self.cluster)):
                     self.global_step = tf.get_variable('global_step', [], 
                                       initializer = tf.constant_initializer(0), 
                                       trainable = False,
