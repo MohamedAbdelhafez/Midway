@@ -131,7 +131,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 #norms, expects, l1d,l2d,  quad, l1, l2, inter_vecs = sess.run([tfs.norms, tfs.expectations, tfs.Il1d, tfs.Il2d,tfs.quad, tfs.Il1, tfs.Il2, tfs.inter_vecs], feed_dict=feed_dict)
                 _ = sess.run([tfs.optimizer], feed_dict=feed_dict)
                 #print (np.square(l1 + l2))
-              
+                print (ii, tfs.task_index)
                 sys.stdout.flush()
 
 
