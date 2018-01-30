@@ -672,7 +672,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
 
             all_jumps = tf.stack(all_jumps)
             jumps.append(jumps)
-            jumps = tf.stack(jumps)
+            #jumps = tf.stack(jumps)
             #for tf_initial_vector in tf_initial_vectors:
                 #Evolution_states.append(One_Trajectory(tf_initial_vector)) #returns the final state of the trajectory
             packed = inter_vecs_packed
