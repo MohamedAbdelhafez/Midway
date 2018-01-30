@@ -91,6 +91,8 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
         sess = tf.train.MonitoredTrainingSession(master=tfs.server.target, config = config, is_chief=tfs.is_chief,
                                              hooks=[tfs.sync_replicas_hook])
         itera = 0
+        if tfs.is_chief:
+            time.sleep(5)
 
         traj_num = sys_para.trajectories
         max_traj = 1000

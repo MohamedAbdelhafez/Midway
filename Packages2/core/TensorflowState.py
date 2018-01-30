@@ -444,6 +444,8 @@ class TensorflowState:
         self.opt = tf.train.SyncReplicasOptimizer(self.opt, replicas_to_aggregate=len(self.hosts)-1,
                                 total_num_replicas=len(self.hosts)-1)
         self.sync_replicas_hook = self.opt.make_session_run_hook(self.is_chief)
+        self.init_token_op = self.opt.get_init_tokens_op()
+        self.chief_queue_runner = self.opt.get_chief_queue_runner()
         #Here we extract the gradients of the pulses
         self.grad = self.opt.compute_gradients(self.reg_loss)
 
