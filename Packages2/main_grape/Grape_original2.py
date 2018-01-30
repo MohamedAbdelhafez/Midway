@@ -144,7 +144,7 @@ def expect (sys_para, num_trajs,  op, psis):
     else:
         return tf.stack(result)
 
-def normalize(sys_para, psi):
+def normalize(sys_para, psi, num_vecs):
     state_num=sys_para.state_num
     new_norms = tf.reshape(get_norms(sys_para, psi),[num_vecs])
     weights = 1/tf.sqrt(new_norms)
@@ -156,7 +156,7 @@ def normalize(sys_para, psi):
 
 
 
-def get_norms(sys_para, psi):
+def get_norms(sys_para, psi, num_vecs):
     state_num=sys_para.state_num
     psi1 = tf.reshape(psi,[2*state_num,num_vecs])
     return tf.reduce_sum(tf.square(psi1),0)
@@ -541,7 +541,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             for ii in np.arange(0,sys_para.steps):
                 old_psi = new_psi        
                 new_psi = matvecexp_op(H_weights[:,ii],tf_matrix_list,old_psi)
-                new_norms = tf.reshape(get_norms(sys_para, new_psi),[num_vecs])
+                new_norms = tf.reshape(get_norms(sys_para, new_psi, num_vecs),[num_vecs])
 
                 norms = tf.multiply(norms,new_norms)
                 all_norms.append(norms)
@@ -638,7 +638,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 all_jumps.append(wh)
 
 
-                new_psi = normalize(sys_para, new_psi)
+                new_psi = normalize(sys_para, new_psi, num_vecs)
 
                 inter_vecs_list.append(new_psi)
                 if sys_para.expect:
