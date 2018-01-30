@@ -115,9 +115,13 @@ else:
         print("---Variables initialized---")
 
         
+    sess_config = tf.ConfigProto(
+        allow_soft_placement=True,
+        log_device_placement=False,
+        device_filters=["/job:ps", "/job:worker/task:%d" % task_index])
     step = 0
     sess = tf.train.MonitoredTrainingSession(master=server.target, is_chief=is_chief,
-                                         hooks=[sync_replicas_hook])
+                                         hooks=[sync_replicas_hook], config = sess_config)
     def unison_shuffled_copies(a, b):
         assert len(a) == len(b)
         p = np.random.permutation(len(a))
