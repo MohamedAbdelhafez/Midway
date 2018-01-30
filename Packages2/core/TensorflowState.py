@@ -461,8 +461,8 @@ class TensorflowState:
         #self.new_grad = self.grad
         
         if self.sys_para.traj:
-            self.optimizer = self.opt.apply_gradients(self.new_grad, global_step = self.global_step)
-            #self.optimizer = self.opt.apply_gradients(self.grad)
+            #self.optimizer = self.opt.apply_gradients(self.new_grad, global_step = self.global_step)
+            self.optimizer = self.opt.apply_gradients(self.grad, global_step = self.global_step)
         else:
             self.optimizer = self.opt.apply_gradients(self.grad)
        
