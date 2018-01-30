@@ -146,7 +146,7 @@ def expect (sys_para, num_trajs,  op, psis):
 
 def normalize(sys_para, psi, num_vecs):
     state_num=sys_para.state_num
-    new_norms = tf.reshape(get_norms(sys_para, psi),[num_vecs])
+    new_norms = tf.reshape(get_norms(sys_para, psi, num_vecs),[num_vecs])
     weights = 1/tf.sqrt(new_norms)
     x = []
     for ii in range (2*state_num):
