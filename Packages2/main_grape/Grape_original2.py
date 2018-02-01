@@ -306,7 +306,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
         server.join()
     else:
         print ("Worker running")
-        is_chief = task_index == 0
+        is_chief = task_index == 1
         with tf.device("/job:ps/task:0/"):
             
             input_num = len(sys_para.Hnames) +1
