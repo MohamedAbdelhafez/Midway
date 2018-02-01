@@ -748,10 +748,8 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 #optimizer = opt.apply_gradients(grad)
 
                 print ("Optimizer initialized.")
-                saver = tf.train.Saver()
-
-                print ("Utilities initialized.")
-                init_op = tf.initialize_all_variables()
+                
+                init_op = tf.global_variables_initializer()
                 init_token_op = opt.get_init_tokens_op()
             
 
@@ -773,7 +771,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
 
     sv = tf.train.Supervisor(is_chief=is_chief,
                          logdir="/tmp",
-                         saver=tf.train.Saver(),
+                         
                          init_op=init_op,
                          recovery_wait_secs=20,
                          global_step=global_step)
