@@ -798,12 +798,12 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
         num_traj_batch = int(traj_num/num_batches)
         print ("Entering iterations")
         for ii in range(convergence['max_iterations']):
-            learning_rate = float(convergence['rate']) * np.exp(-float(ii) / convergence['learning_rate_decay'])
+            lrate = float(convergence['rate']) * np.exp(-float(ii) / convergence['learning_rate_decay'])
             print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
             sys.stdout.flush()
-            feed_dict = {learning_rate: learning_rate, start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
+            fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
             #norms, expects, l1d,l2d,  quad, l1, l2, inter_vecs = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs], feed_dict=feed_dict)
-            _ = sess.run([optimizer], feed_dict=feed_dict)
+            _ = sess.run([optimizer], feed_dict=fd_dict)
             #print (np.square(l1 + l2))
             print (ii, task_index)
             sys.stdout.flush()
