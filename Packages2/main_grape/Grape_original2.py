@@ -769,43 +769,43 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
 
 
 
-    sv = tf.train.Supervisor(is_chief=is_chief,
-                         logdir="/tmp",
-                         
-                         init_op=init_op,
-                         recovery_wait_secs=20,
-                         global_step=global_step)
+        sv = tf.train.Supervisor(is_chief=is_chief,
+                             logdir="/tmp",
 
-    sess = sv.prepare_or_wait_for_session(server.target) 
+                             init_op=init_op,
+                             recovery_wait_secs=20,
+                             global_step=global_step)
 
-    itera = 0
-    if is_chief:
-        sv.start_queue_runners(sess, [chief_queue_runner])
-        sess.run(init_token_op)
+        sess = sv.prepare_or_wait_for_session(server.target) 
+
+        itera = 0
+        if is_chief:
+            sv.start_queue_runners(sess, [chief_queue_runner])
+            sess.run(init_token_op)
 
 
-    traj_num = sys_para.trajectories
-    max_traj = 1000
-    num_psi0 = len(sys_para.initial_vectors)
-    needed_traj = []
-    for kk in range (num_psi0):
-        needed_traj.append(traj_num)
-    jump_traj = np.sum(needed_traj)
-    num_batches = len(hosts)-1
-    num_traj_batch = int(traj_num/num_batches)
-    lrate = 0.005
-    fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
-    print ("Entering iterations")
-    for ii in range(1000):
+        traj_num = sys_para.trajectories
+        max_traj = 1000
+        num_psi0 = len(sys_para.initial_vectors)
+        needed_traj = []
+        for kk in range (num_psi0):
+            needed_traj.append(traj_num)
+        jump_traj = np.sum(needed_traj)
+        num_batches = len(hosts)-1
+        num_traj_batch = int(traj_num/num_batches)
+        lrate = 0.005
+        fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
+        print ("Entering iterations")
+        for ii in range(1000):
 
-        print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
-        sys.stdout.flush()
+            print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
+            sys.stdout.flush()
 
-        #norms, expects, l1d,l2d,  quad, l1, l2, inter_vecs = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs], feed_dict=feed_dict)
-        _ = sess.run([optimizer], feed_dict=fd_dict)
-        #print (np.square(l1 + l2))
-        print (ii, task_index)
-        sys.stdout.flush()
+            #norms, expects, l1d,l2d,  quad, l1, l2, inter_vecs = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs], feed_dict=feed_dict)
+            _ = sess.run([optimizer], feed_dict=fd_dict)
+            #print (np.square(l1 + l2))
+            print (ii, task_index)
+            sys.stdout.flush()
 
 
     #conv = Convergence(sys_para,time_unit,convergence)
