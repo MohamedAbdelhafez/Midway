@@ -810,7 +810,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             sys.stdout.flush()
 
             #norms, expects, l1d,l2d,  quad, l1, l2, inter_vecs = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs], feed_dict=feed_dict)
-            _ = sess.run([optimizer], feed_dict=fd_dict)
+            #_ = sess.run([optimizer], feed_dict=fd_dict)
             #print (np.square(l1 + l2))
             print (ii, task_index)
             sys.stdout.flush()
