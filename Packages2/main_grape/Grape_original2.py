@@ -739,8 +739,9 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                     #optimizer = opt.apply_gradients(new_grad, global_step = global_step)
                     #optimizer = opt.apply_gradients(grad, global_step = global_step)
                     optimizer = opt.minimize(reg_loss, global_step = global_step)
-                    init_token_op = opt.get_init_tokens_op()
                     chief_queue_runner = opt.get_chief_queue_runner()
+                    init_op = tf.global_variables_initializer()
+                    init_token_op = opt.get_init_tokens_op()
                 else:
                     optimizer = opt.apply_gradients(grad)
 
@@ -749,8 +750,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
 
                 print ("Optimizer initialized.")
                 
-                init_op = tf.global_variables_initializer()
-                init_token_op = opt.get_init_tokens_op()
+                
             
 
             
