@@ -289,6 +289,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                     hosts.append(server+str(s+jj).zfill(4)+":2222")
         print(hosts)
         print(node_name)
+        sys.stdout.flush()
         idx = hosts.index(node_name+":2222") 
         if (idx==0):
             job_name = "ps"
@@ -301,11 +302,14 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                                  job_name=job_name, task_index=task_index)
 
         print ("Building graph:")
+        sys.stdout.flush()
         if job_name == "ps":
             print ("PS Joined")
+            sys.stdout.flush()
             server.join()
         else:
             print ("Worker running")
+            sys.stdout.flush()
             is_chief = task_index == 1
             with tf.device("/job:ps/task:0/"):
 
@@ -505,6 +509,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
 
 
                 print ("Operators weight initialized.")
+                sys.stdout.flush()
 
 
             with tf.device(tf.train.replica_device_setter(  worker_device="/job:worker/task:%d" % task_index, cluster=cluster)):
@@ -677,6 +682,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                     #Evolution_states.append(One_Trajectory(tf_initial_vector)) #returns the final state of the trajectory
                 packed = inter_vecs_packed
                 print ("Trajectories Initialized")
+                sys.stdout.flush()
 
 
                 if sys_para.state_transfer == False:
@@ -713,6 +719,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 reg_loss = loss
 
                 print ("Training loss initialized.")
+                sys.stdout.flush()
                 learning_rate = tf.placeholder(tf.float32,shape=[])
                 opt = tf.train.GradientDescentOptimizer(learning_rate = learning_rate)
                 opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate=len(hosts)-1,
@@ -749,13 +756,14 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 #optimizer = opt.apply_gradients(grad)
 
                 print ("Optimizer initialized.")
-                
+                sys.stdout.flush()
                 
             
 
             
 
                 print ("Graph " +str(task_index) + " built!")
+                sys.stdout.flush()
 
 
 
