@@ -821,7 +821,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
 
     #conv = Convergence(sys_para,time_unit,convergence)
 def my_print(text):
-    sys.stdout.write(str(text))
+    sys.stdout.write(str(text)+'\n')
     sys.stdout.flush()
     # run the optimization
     #SS = run_session(tfs,graph,conv,sys_para,method, show_plots = sys_para.show_plots, use_gpu = use_gpu)
