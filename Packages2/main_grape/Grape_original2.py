@@ -807,19 +807,22 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
         sys.stdout.flush()
         for ii in range(5):
 
-            print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
-            sys.stdout.flush()
+            my_print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
+            #sys.stdout.flush()
 
             nos, exs, l1d,l2d,  q, l1, l2, int_vecs = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs], feed_dict=fd_dict)
             #_ = sess.run([optimizer], feed_dict=fd_dict)
             #print (np.square(l1 + l2))
-            sys.stdout.flush()
-            print (ii, task_index)
-            sys.stdout.flush()
+            #sys.stdout.flush()
+            my_print (ii)
+            my_print(task_index)
+            #sys.stdout.flush()
 
 
     #conv = Convergence(sys_para,time_unit,convergence)
-
+def my_print(text):
+    sys.stdout.write(str(text))
+    sys.stdout.flush()
     # run the optimization
     #SS = run_session(tfs,graph,conv,sys_para,method, show_plots = sys_para.show_plots, use_gpu = use_gpu)
     #return SS.uks,SS.Uf
