@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 
 
-import numpy
+import numpy, time
 import tensorflow as tf
 import os, sys
 
@@ -65,6 +65,8 @@ def run_training(server, cluster_spec, num_workers, task_index) :
                 labels_one_hot = dense_to_one_hot(labels_dense)
                 _, cost, acc, step = sess.run([train_step, cross_entropy, accuracy, global_step], feed_dict = { x: source_data, y_ : labels_one_hot })
                 print("[%d]: cost=%.2f, accuracy=%.2f" % (step, cost, acc))
+                with open('out.txt', 'a') as the_file:
+                    the_file.write (str(i) + " " + str(os.environ["SLURMD_NODENAME"]) + " " + str (time.time()) + "\n")
                 #print(node_name)
 
 
