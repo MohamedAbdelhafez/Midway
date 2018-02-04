@@ -35,8 +35,9 @@ def run_training(server, cluster_spec, num_workers, task_index) :
                 cross_entropy = -tf.reduce_sum(y_ * tf.log(y))
                 opt = tf.train.GradientDescentOptimizer(0.01)
                 opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate = num_workers,
-                    replica_id = task_index, total_num_replicas = num_workers)
+                     total_num_replicas = num_workers)
                 train_step = opt.minimize(cross_entropy, global_step = global_step)
+                sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
                 # Test trained model
                 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
