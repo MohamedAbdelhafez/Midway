@@ -4,8 +4,8 @@
 #SBATCH --output=cpuSbatch.out 
 #SBATCH --error=cpuSbatch.err 
 #SBATCH --time=00:30:00 
-#SBATCH --nodes=4
-#SBATCH --ntasks=4
+#SBATCH --nodes=3
+#SBATCH --ntasks=3
 #SBATCH --exclusive 
 #SBATCH -p broadwl 
 #SBATCH --tasks-per-node=1 
@@ -18,6 +18,5 @@ source activate DL_CPU
 
 chmod u+x t2.py
 srun -n 1 -N 1 t2.py  & 
-srun -n 1 -N 1 t2.py  &
 srun -n 1 -N 1 t2.py  &
 srun -n 1 -N 1 t2.py 
