@@ -7,6 +7,8 @@ from __future__ import print_function
 import numpy, time
 import tensorflow as tf
 import os, sys
+os.environ['no_proxy'] = '127.0.0.1,localhost'
+
 
 def dense_to_one_hot(labels_dense, num_classes = 10) :
     """Convert class labels from scalars to one-hot vectors."""
@@ -46,7 +48,7 @@ def run_training(server, cluster_spec, num_workers, task_index) :
             init_token_op = opt.get_init_tokens_op()
             chief_queue_runner = opt.get_chief_queue_runner()
 
-            init = tf.initialize_all_variables()
+            init =  tf.global_variables_initializer()
             sv = tf.train.Supervisor(is_chief = is_chief,
                 init_op = init,
                 global_step = global_step)
