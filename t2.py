@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import numpy
 import tensorflow as tf
-
+import os, sys
 
 def dense_to_one_hot(labels_dense, num_classes = 10) :
     """Convert class labels from scalars to one-hot vectors."""
