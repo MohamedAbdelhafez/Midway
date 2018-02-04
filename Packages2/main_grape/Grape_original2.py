@@ -805,14 +805,14 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                     #sys.stdout.flush()
 
                     #nos, exs, l1d,l2d,  q, l1, l2, int_vecs = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs], feed_dict=fd_dict)
-                    _ = sess.run([optimizer], feed_dict=fd_dict)
+                    _, step = sess.run([optimizer, global_step], feed_dict=fd_dict)
                     #print (np.square(l1 + l2))
                     #sys.stdout.flush()
                     my_print (ii)
                     my_print(task_index)
-                    time.sleep( np.random.random_sample())
+                    #time.sleep( np.random.random_sample())
                     with open('out.txt', 'a') as the_file:
-                        the_file.write('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories" + "\n")
+                        the_file.write('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories " + "step:" + str(step) +  "\n")
 
                     #sys.stdout.flush()
 
