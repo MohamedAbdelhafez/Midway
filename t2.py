@@ -66,7 +66,7 @@ def run_training(server, cluster_spec, num_workers, task_index) :
                 _, cost, acc, step = sess.run([train_step, cross_entropy, accuracy, global_step], feed_dict = { x: source_data, y_ : labels_one_hot })
                 print("[%d]: cost=%.2f, accuracy=%.2f" % (step, cost, acc))
                 with open('out.txt', 'a') as the_file:
-                    the_file.write (str(i) + " " + str(os.environ["SLURMD_NODENAME"]) + " " + str (time.time()) + "\n")
+                    the_file.write (str(i) + " " + str(os.environ["SLURMD_NODENAME"]) + " " + str (time.time()) + " " +str(step) + " " +str(acc) +"\n")
                 #print(node_name)
 
 
