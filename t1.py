@@ -11,7 +11,7 @@ sys.path.insert(0,currentdir+"/Packages")
 
 itera = 8
 
-for ii in itera:
+for ii in range(itera):
     print (ii)
     print(str(os.environ["SLURMD_NODENAME"]))
     sys.stdout.flush()
