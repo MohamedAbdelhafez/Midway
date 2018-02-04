@@ -9,9 +9,10 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,currentdir+"/Packages") 
 
 
+itera = 8
 
-print ("node_id : " + str(os.environ['SLURM_NODEID']))
-print ("task_id : " + str(os.environ['SLURM_PROCID']))
-print ("host_name : " + str(os.environ['HOSTNAME']))
-print("-->" + repr(subprocess.check_output("hostname")))
- 
+for ii in itera:
+    print (ii)
+    print(str(os.environ["SLURMD_NODENAME"]))
+    sys.stdout.flush()
+    
