@@ -65,62 +65,58 @@ def run_training(server, cluster_spec, num_workers, task_index) :
                 print("[%d]: cost=%.2f, accuracy=%.2f" % (step, cost, acc))
 
 
-def main(_) :
     
 
-    tf_hostlist = str(os.environ['SLURM_NODELIST'])
-    node_name = str(os.environ["SLURMD_NODENAME"])
-    foo = ( [pos for pos, char in enumerate(tf_hostlist) if char == ','])
-    clusters = tf_hostlist.count(',')
-    start_i = 9
-    hosts =[]
-    server = tf_hostlist[0:8]
-    for ii in range (clusters+1):
-        if ii>0:
-            start_i = foo[ii-1]+1
-        if clusters==0:
-            end_i = len(tf_hostlist)-1
-        elif ii != clusters:
-            end_i = foo[ii]
-        else:
-            end_i = len(tf_hostlist)-1
-        string = tf_hostlist[start_i:end_i]
-        if (len(string) <5):
-            hosts.append(server+string+":2222")
-        else:
-            s = int(string[0:4])
-            e = int(string[6:10])
-            for jj in range (e-s+1):
-                hosts.append(server+str(s+jj).zfill(4)+":2222")
-    print(hosts)
-    print(node_name)
-    sys.stdout.flush()
-    idx = hosts.index(node_name+":2222") 
-    if (idx==0):
-        job_name = "ps"
-        task_index = 0
+tf_hostlist = str(os.environ['SLURM_NODELIST'])
+node_name = str(os.environ["SLURMD_NODENAME"])
+foo = ( [pos for pos, char in enumerate(tf_hostlist) if char == ','])
+clusters = tf_hostlist.count(',')
+start_i = 9
+hosts =[]
+server = tf_hostlist[0:8]
+for ii in range (clusters+1):
+    if ii>0:
+        start_i = foo[ii-1]+1
+    if clusters==0:
+        end_i = len(tf_hostlist)-1
+    elif ii != clusters:
+        end_i = foo[ii]
     else:
-        job_name = "worker"
-        task_index = idx -1
-    cluster = tf.train.ClusterSpec( {"ps" : [hosts[0]], "worker": hosts[1:] } )
-    server = tf.train.Server(server_or_cluster_def=cluster,
-                                 job_name=job_name, task_index=task_index)
-
-    
-    
-    
-    
-    
-    
-        
-    
-    if job_name == "ps":
-        server.join()
+        end_i = len(tf_hostlist)-1
+    string = tf_hostlist[start_i:end_i]
+    if (len(string) <5):
+        hosts.append(server+string+":2222")
     else:
-        run_training(server, cluster, len(hosts)-1, task_index)
+        s = int(string[0:4])
+        e = int(string[6:10])
+        for jj in range (e-s+1):
+            hosts.append(server+str(s+jj).zfill(4)+":2222")
+print(hosts)
+print(node_name)
+sys.stdout.flush()
+idx = hosts.index(node_name+":2222") 
+if (idx==0):
+    job_name = "ps"
+    task_index = 0
+else:
+    job_name = "worker"
+    task_index = idx -1
+cluster = tf.train.ClusterSpec( {"ps" : [hosts[0]], "worker": hosts[1:] } )
+server = tf.train.Server(server_or_cluster_def=cluster,
+                             job_name=job_name, task_index=task_index)
 
-if __name__ == '__main__' :
-    tf.app.run()
+
+
+
+
+
+
+
+
+if job_name == "ps":
+    server.join()
+else:
+    run_training(server, cluster, len(hosts)-1, task_index)
 
 
 
