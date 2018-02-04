@@ -59,12 +59,13 @@ def run_training(server, cluster_spec, num_workers, task_index) :
                 sess.run(init_token_op)
             print ("Entering iterations: ")
 
-            for i in range(100000):
+            for i in range(10):
                 source_data = numpy.random.normal(loc = 0.0, scale = 1.0, size = (100, 784))
                 labels_dense = numpy.clip(numpy.sum(source_data, axis = 1) / 5 + 5, 0, 9).astype(int)
                 labels_one_hot = dense_to_one_hot(labels_dense)
                 _, cost, acc, step = sess.run([train_step, cross_entropy, accuracy, global_step], feed_dict = { x: source_data, y_ : labels_one_hot })
                 print("[%d]: cost=%.2f, accuracy=%.2f" % (step, cost, acc))
+                print("node_name")
 
 
     
