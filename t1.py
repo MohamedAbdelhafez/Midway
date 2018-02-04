@@ -2,7 +2,7 @@
 
 
 import numpy as np
-import os,sys,inspect
+import os,sys,inspect,time
 import subprocess
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -14,5 +14,6 @@ itera = 8
 for ii in range(itera):
     print (ii)
     print(str(os.environ["SLURMD_NODENAME"]))
+    print (time.time())
     sys.stdout.flush()
     
