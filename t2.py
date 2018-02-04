@@ -65,7 +65,7 @@ def run_training(server, cluster_spec, num_workers, task_index) :
                 labels_one_hot = dense_to_one_hot(labels_dense)
                 _, cost, acc, step = sess.run([train_step, cross_entropy, accuracy, global_step], feed_dict = { x: source_data, y_ : labels_one_hot })
                 print("[%d]: cost=%.2f, accuracy=%.2f" % (step, cost, acc))
-                print("node_name")
+                print(node_name)
 
 
     
