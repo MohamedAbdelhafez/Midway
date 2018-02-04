@@ -816,6 +816,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             #sys.stdout.flush()
             my_print (ii)
             my_print(task_index)
+            time.sleep( np.random.random_sample())
             with open('out.txt', 'a') as the_file:
                 the_file.write('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories" + "\n")
                 
