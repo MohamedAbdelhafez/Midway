@@ -11,9 +11,9 @@ sys.path.insert(0,currentdir+"/Packages")
 
 itera = 8
 
+   
 for ii in range(itera):
-    print (ii)
-    print(str(os.environ["SLURMD_NODENAME"]))
-    print (time.time())
-    sys.stdout.flush()
+    with open('out.txt', 'a') as the_file:
+        the_file.write (str(ii) + " " + str(os.environ["SLURMD_NODENAME"]) + " " + str (time.time()) + "\n")
+    
     
