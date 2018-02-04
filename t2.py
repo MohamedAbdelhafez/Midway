@@ -7,8 +7,8 @@ from __future__ import print_function
 import numpy, time
 import tensorflow as tf
 import os, sys
-os.environ['no_proxy'] = 'localhost:2222'
-os.environ['NO_PROXY'] = 'localhost:2222'
+os.environ['no_proxy'] = 'grpc://localhost:2222'
+os.environ['NO_PROXY'] = 'grpc://localhost:2222'
 
 def dense_to_one_hot(labels_dense, num_classes = 10) :
     """Convert class labels from scalars to one-hot vectors."""
