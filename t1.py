@@ -16,5 +16,6 @@ for ii in range(itera):
     time.sleep( np.random.random_sample())
     with open('out.txt', 'a') as the_file:
         the_file.write (str(ii) + " " + str(os.environ["SLURMD_NODENAME"]) + " " + str (time.time()) + "\n")
+    print (str(ii) + " " + str(os.environ["SLURMD_NODENAME"]) )
     
     
