@@ -13,25 +13,16 @@ from numpy.random import random_sample
 
 import numpy as np
 import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,currentdir+"/Packages2") 
-from main_grape.Grape_original2 import Grape
+
 
 import tensorflow as tf
-import numpy as np
 import scipy.linalg as la
-from core.TensorflowState import TensorflowState
-from core.SystemParameters import SystemParameters
-#from core.Convergence import Convergence
-#from core.run_session import run_session
 
 
 import random as rd
 import time
 import math
-from helper_functions.grape_functions import c_to_r_mat, sort_ev
-from core.RegularizationFunctions import get_reg_loss
+
 from tensorflow.python.framework import function
 from tensorflow.python.framework import ops
 from time import sleep
