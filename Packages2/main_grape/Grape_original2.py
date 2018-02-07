@@ -16,7 +16,8 @@ from helper_functions.grape_functions import c_to_r_mat, sort_ev
 from core.RegularizationFunctions import get_reg_loss
 from tensorflow.python.framework import function
 from tensorflow.python.framework import ops
-
+from time import sleep
+from numpy.random import random_sample
 
 def get_inner_product(sys_para,psi1,psi2, num_vecs):
     #Take 2 states psi1,psi2, calculate their overlap, for single vector
