@@ -22,3 +22,6 @@ unset https_proxy
 srun -n 1 -N 1 test.py  & 
 srun -n 1 -N 1 test.py  &
 srun -n 1 -N 1 test.py 
+
+
+

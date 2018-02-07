@@ -776,7 +776,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
 
 
                 sv = tf.train.Supervisor(is_chief=is_chief,
-                                     logdir="/tmp",
+                                     
 
                                      init_op=init_op,
                                      recovery_wait_secs=2,
