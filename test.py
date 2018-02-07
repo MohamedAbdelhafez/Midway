@@ -1427,19 +1427,25 @@ else:
 
             print ("Graph " +str(task_index) + " built!")
             sys.stdout.flush()
+            
+            local_init_op = opt.local_step_init_op
+            if is_chief:
+                  local_init_op = opt.chief_init_op
+            ready_for_local_init_op = opt.ready_for_local_init_op
+            # Initial token and chief queue runners required by the sync_replicas mode
+            
             init_op = tf.global_variables_initializer()
             init_token_op = opt.get_init_tokens_op()
             chief_queue_runner = opt.get_chief_queue_runner()
 
 
-            sv = tf.train.Supervisor(is_chief=is_chief,
-
-
+            sv = tf.train.Supervisor(is_chief=is_chief, local_init_op=local_init_op,
+                             ready_for_local_init_op=ready_for_local_init_op,
                                  init_op=init_op,
                                  recovery_wait_secs=0.001,
                                  global_step=global_step)
 
-            config = tf.ConfigProto(allow_soft_placement = True,device_filters=["/job:ps", "/job:worker/task:%d" % task_index])
+            config = tf.ConfigProto(allow_soft_placement = True, device_filters=["/job:ps", "/job:worker/task:0", "/job:worker/task:%d" % task_index])
 
             sess = sv.prepare_or_wait_for_session(server.target, config = config)
 
@@ -1447,8 +1453,9 @@ else:
 
             itera = 0
             if is_chief:
-                sv.start_queue_runners(sess, [chief_queue_runner])
                 sess.run(init_token_op)
+                sv.start_queue_runners(sess, [chief_queue_runner])
+                
 
 
             traj_num = sys_para.trajectories
