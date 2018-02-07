@@ -1001,39 +1001,14 @@ else:
 
             if sys_para.traj:
                 tf_initial_vectors=[]
-                num_trajs = tf.placeholder(tf.int32, shape = [num_vecs])
-                vecs = tf.reshape(tf.constant(sys_para.initial_vectors[0],dtype=tf.float32),[1,2*sys_para.state_num])
-                targets = tf.reshape(tf.constant(sys_para.target_vectors[0],dtype =tf.float32),[1,2*sys_para.state_num])
-                ii = 0
-                counter = tf.constant(0)
+                num_trajs = [150,150]
                 for initial_vector in sys_para.initial_vectors:
-
                     tf_initial_vector = tf.constant(initial_vector,dtype=tf.float32)
-                    target_vector = tf.reshape(tf.constant(sys_para.target_vectors[ii],dtype =tf.float32),[1,2*sys_para.state_num])
-                    tf_initial_vectors.append(tf_initial_vector)
-                    tf_initial_vector = tf.reshape(tf_initial_vector,[1,2*sys_para.state_num])
-                    i = tf.constant(0)
 
-                    c = lambda i,vecs,targets: tf.less(i, num_trajs[ii])
-
-                    def body(i,vecs,targets):
-
-                        def f1(): return tf.concat([vecs,tf_initial_vector],0), tf.concat([targets,target_vector],0)
-                        def f2(): return tf_initial_vector, target_vector
-                        vecs,targets = tf.cond(tf.logical_and(tf.equal(counter,tf.constant(0)),tf.equal(i,tf.constant(0))), f2, f1)
-
-
-
-                        return [tf.add(i,1), vecs,targets]
-
-                    r,vecs,targets = tf.while_loop(c, body, [i,vecs,targets],shape_invariants = [i.get_shape(), tf.TensorShape([None,2*sys_para.state_num]), tf.TensorShape([None,2*sys_para.state_num])])
-                    counter = tf.add(counter,r)
-                    ii = ii+1
-                vecs = tf.transpose(vecs)
-                targets = tf.transpose(targets)
-                packed_initial_vectors = vecs
-                target_vecs = targets
-                num_vecs = counter
+                    for ii in range(150):
+                        tf_initial_vectors.append(tf_initial_vector)
+                packed_initial_vectors = tf.transpose(tf.stack(tf_initial_vectors))
+                num_vecs = 300
 
             else:
                 tf_initial_vectors=[]
@@ -1256,7 +1231,7 @@ else:
             num_batches = len(hosts)-1
             num_traj_batch = int(traj_num/num_batches)
             lrate = 0.005
-            fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
+            fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0])}
             print ("Entering iterations_"+str(task_index))
             sys.stdout.flush()
             #if is_chief:
