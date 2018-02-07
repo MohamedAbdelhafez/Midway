@@ -287,9 +287,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
             e = int(string[6:10])
             for jj in range (e-s+1):
                 hosts.append(server+str(s+jj).zfill(4)+":2222")
-    print(hosts)
-    print(node_name)
-    sys.stdout.flush()
+    
     idx = hosts.index(node_name+":2222") 
     if (idx==0):
         job_name = "ps"
@@ -300,6 +298,12 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
     cluster = tf.train.ClusterSpec( {"ps" : [hosts[0]], "worker": hosts[1:] } )
     server = tf.train.Server(server_or_cluster_def=cluster,
                              job_name=job_name, task_index=task_index)
+    
+    print(hosts)
+    print(node_name,job_name,task_index)
+    sys.stdout.flush()
+
+
 
     print ("Building graph:")
     sys.stdout.flush()
@@ -310,7 +314,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
     else:
         print ("Worker running")
         sys.stdout.flush()
-        is_chief = task_index == 1
+        is_chief = (task_index == 0 and job_name == "worker")
         with tf.Graph().as_default():  
             with tf.device(tf.train.replica_device_setter(cluster = cluster)) :            
                 with tf.device('/cpu:0') :
@@ -775,10 +779,13 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                                      logdir="/tmp",
 
                                      init_op=init_op,
-                                     recovery_wait_secs=20,
+                                     recovery_wait_secs=0.1,
                                      global_step=global_step)
+                
+                config = tf.ConfigProto(allow_soft_placement = True)
+                sess = sv.prepare_or_wait_for_session(server.target, config = config)
 
-                sess = sv.prepare_or_wait_for_session(server.target) 
+                
 
                 itera = 0
                 if is_chief:
@@ -800,6 +807,8 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 print ("Entering iterations_"+str(task_index))
                 sys.stdout.flush()
                 for ii in range(5):
+                    if is_chief:
+                        sleep(0.01)
 
                     my_print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
                     #sys.stdout.flush()

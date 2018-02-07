@@ -3,7 +3,7 @@
 #SBATCH --job-name=cpuSbatch 
 #SBATCH --output=cpuSbatch.out 
 #SBATCH --error=cpuSbatch.err 
-#SBATCH --time=00:30:00 
+#SBATCH --time=00:10:00 
 #SBATCH --nodes=3 
 #SBATCH --ntasks=3
 #SBATCH --exclusive 
