@@ -8,7 +8,6 @@ sys.path.insert(0,currentdir+"/Packages2")
 from main_grape.Grape_original2 import Grape
 
 import tensorflow as tf
-#os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import numpy as np
 import scipy.linalg as la
 from core.TensorflowState import TensorflowState
@@ -244,7 +243,9 @@ def get_avgd_inner_product ( sys_para, psi1, psi2, start, end):
         imags = tf.reduce_sum(bc_ad)/tf.cast((end-start), tf.float32)
 
     return reals, imags
-
+def my_print(text):
+    sys.stdout.write(str(text)+'\n')
+    sys.stdout.flush()
 def expect (sys_para, num_trajs,  op, psis):
     result = []
     psis2 = tf.matmul(tf.cast(op,tf.float32),psis)
@@ -379,7 +380,7 @@ if maxA is None:
 else:
     maxAmp = maxA
 
-Taylor_terms = [20,0]
+Taylor_terms = None
 if state_transfer:
     no_scaling = True
 else:
@@ -957,9 +958,7 @@ else:
 
 
     #conv = Convergence(sys_para,time_unit,convergence)
-def my_print(text):
-    sys.stdout.write(str(text)+'\n')
-    sys.stdout.flush()
+
     # run the optimization
     #SS = run_session(tfs,graph,conv,sys_para,method, show_plots = sys_para.show_plots, use_gpu = use_gpu)
     #return SS.uks,SS.Uf
