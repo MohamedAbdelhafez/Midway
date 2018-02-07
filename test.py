@@ -137,7 +137,8 @@ file_name='JC'
 trajectories = 300
 do_all_traj = False,
 data_path = str(currentdir)+'/Data'
-
+save = False
+use_inter_vecs=True
 
 def get_inner_product(sys_para,psi1,psi2, num_vecs):
     #Take 2 states psi1,psi2, calculate their overlap, for single vector
@@ -378,8 +379,13 @@ if maxA is None:
 else:
     maxAmp = maxA
 
+Taylor_terms = 20
+if state_transfer:
+    no_scaling = True
+else:
+    no_scaling = False
 # pass in system parameters
-sys_para = SystemParameters(H0,Hops,Hnames,U,U0,total_time,steps,states_concerned_list,dressed_info,maxAmp, draw,initial_guess,  show_plots,unitary_error,state_transfer,no_scaling,reg_coeffs, save, file_path, Taylor_terms, use_gpu, use_inter_vecs,sparse_H,sparse_U,sparse_K, c_ops, trajectories, do_all_traj, expect_op)
+sys_para = SystemParameters(H0,Hops,Hnames,U,U0,total_time,steps,psi0,dressed_info,maxAmp, draw,initial_guess,  show_plots,unitary_error,state_transfer,no_scaling,reg_coeffs, save, file_path, Taylor_terms, use_gpu, use_inter_vecs,sparse_H,sparse_U,sparse_K, c_ops, trajectories, do_all_traj, expect_op)
 
 #run_python = Python_evolve(sys_para)
 
