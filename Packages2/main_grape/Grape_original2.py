@@ -780,7 +780,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                                      
 
                                      init_op=init_op,
-                                     recovery_wait_secs=10,
+                                     recovery_wait_secs=0.001,
                                      global_step=global_step)
                 
                 config = tf.ConfigProto(allow_soft_placement = True,device_filters=["/job:ps", "/job:worker/task:%d" % task_index])
