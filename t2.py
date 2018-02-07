@@ -7,6 +7,8 @@ from __future__ import print_function
 import numpy, time
 import tensorflow as tf
 import os, sys
+from time import sleep
+from numpy.random import random_sample
 
 def dense_to_one_hot(labels_dense, num_classes = 10) :
     """Convert class labels from scalars to one-hot vectors."""
@@ -63,6 +65,8 @@ def run_training(server, cluster_spec, num_workers, task_index) :
             print ("Entering iterations: ")
 
             for i in range(10):
+                if is_chief:
+                    sleep(5)
                 source_data = numpy.random.normal(loc = 0.0, scale = 1.0, size = (100, 784))
                 labels_dense = numpy.clip(numpy.sum(source_data, axis = 1) / 5 + 5, 0, 9).astype(int)
                 labels_one_hot = dense_to_one_hot(labels_dense)
