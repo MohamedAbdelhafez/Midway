@@ -555,8 +555,8 @@ class SystemParameters:
 
 
 #Defining time scales
-total_time = 5
-steps = 50
+total_time = 50
+steps = 500
 state_transfer = True
 RWA = True
 RFT = True
@@ -574,7 +574,7 @@ kappa = 0.05
 gamma = 0.001
 g = 0.05
 
-mode_state_num = 5
+mode_state_num = 25
 #g = 2.*np.pi*0.1 #GHz
 fc = 5.0/(2*np.pi) #GHz
 state_num = qubit_state_num * mode_state_num
