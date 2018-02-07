@@ -103,9 +103,7 @@ for ii in range (clusters+1):
         e = int(string[6:10])
         for jj in range (e-s+1):
             hosts.append(server+str(s+jj).zfill(4)+":2222")
-print(hosts)
-print(node_name)
-sys.stdout.flush()
+
 idx = hosts.index(node_name+":2222") 
 if (idx==0):
     job_name = "ps"
@@ -120,7 +118,9 @@ server = tf.train.Server(server_or_cluster_def=cluster,
 
 
 
-
+print(hosts)
+print(node_name,job_name)
+sys.stdout.flush()
 
 
 
