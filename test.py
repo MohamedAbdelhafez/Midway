@@ -1384,8 +1384,8 @@ else:
 
             print ("Training loss initialized.")
             sys.stdout.flush()
-            learning_rate = tf.placeholder(tf.float32,shape=[])
-            opt = tf.train.GradientDescentOptimizer(learning_rate = learning_rate)
+            #learning_rate = tf.placeholder(tf.float32,shape=[])
+            opt = tf.train.GradientDescentOptimizer(0.05)
             opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate=len(hosts)-1,
                                     total_num_replicas=len(hosts)-1)
             sync_replicas_hook = opt.make_session_run_hook(is_chief)
@@ -1447,10 +1447,10 @@ else:
             num_batches = len(hosts)-1
             num_traj_batch = int(traj_num/num_batches)
             lrate = 0.005
-            fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
+            fd_dict = { start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
             print ("Entering iterations_"+str(task_index))
             sys.stdout.flush()
-            #if is_chief:
+            if is_chief:
                 #sleep(0.01)
             for ii in range(13):
 
