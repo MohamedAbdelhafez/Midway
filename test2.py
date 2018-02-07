@@ -1092,7 +1092,7 @@ else:
             for ii in np.arange(0,sys_para.steps):
                 old_psi = new_psi
                 
-                new_psi = tf.reduce_sum(H_weights[:,ii]) * old_psi
+                new_psi = old_psi/tf.reduce_sum(H_weights[:,ii])
                 #new_psi = matvecexp_op(H_weights[:,ii],tf_matrix_list,old_psi)
                 new_norms = tf.reshape(get_norms(sys_para, new_psi, num_vecs),[num_vecs])
 
