@@ -21,7 +21,7 @@ def dense_to_one_hot(labels_dense, num_classes = 10) :
 def run_training(server, cluster_spec, num_workers, task_index) :
     is_chief = (task_index == 0 and job_name == "worker")
     with tf.Graph().as_default():        
-        with tf.device(tf.train.replica_device_setter(cluster = cluster_spec)) :            
+        with tf.device(tf.train.replica_device_setter(worker_device="/job:worker/task:%d" % task_index, cluster = cluster)) :           
             
             global_step = tf.get_variable('global_step', [],
                 initializer = tf.constant_initializer(0), trainable = False)

@@ -317,7 +317,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
         sys.stdout.flush()
         is_chief = (task_index == 0 and job_name == "worker")
         with tf.Graph().as_default():  
-            with tf.device(tf.train.replica_device_setter(cluster = cluster)) :            
+            with tf.device(tf.train.replica_device_setter(worker_device="/job:worker/task:%d" % task_index, cluster = cluster)) :            
                 with tf.device('/cpu:0') :
             
 
