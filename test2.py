@@ -1049,12 +1049,13 @@ else:
             inter_lst = []
             #start = tf.placeholder(tf.float32,shape=[])
             #end = tf.placeholder(tf.float32,shape=[])
-            
+            start = tf.placeholder(tf.float32,shape=[len(sys_para.initial_vectors)])
+            end = tf.placeholder(tf.float32,shape=[len(sys_para.initial_vectors)])
             psi0 = packed_initial_vectors
             old_psi = psi0
             new_psi = psi0
             norms = tf.ones([num_vecs],dtype = tf.float32)
-            
+            r=get_random(sys_para,num_trajs,  start,end,num_vecs)
             operator = tf_c_ops[0] # temporary
             expects = []
             inter_vecs_list=[]
@@ -1114,14 +1115,16 @@ else:
 
             #loss = tf.constant(0.0, dtype = tf.float32)
             
+            
+            if sys_para.expect:
 
-            Il1 = tf.reduce_sum(expectations[:,0,0])  
-            Il2 = -tf.reduce_sum(expectations[:,1,0])
-            Il = Il1 + Il2
-            Il1d = tf.gradients(Il1, [ops_weight_base])[0]
-            Il2d = tf.gradients(Il2, [ops_weight_base])[0]
-            loss = - tf.square(Il)
-            quad = tf.gradients(loss, [ops_weight_base])[0]
+                Il1 = tf.reduce_sum(expectations[:,0,0])  
+                Il2 = -tf.reduce_sum(expectations[:,1,0])
+                Il = Il1 + Il2
+                Il1d = tf.gradients(Il1, [ops_weight_base])[0]
+                Il2d = tf.gradients(Il2, [ops_weight_base])[0]
+                loss = - tf.square(Il)
+                quad = tf.gradients(loss, [ops_weight_base])[0]
 
 
 
@@ -1191,18 +1194,19 @@ else:
             num_batches = len(hosts)-1
             num_traj_batch = int(traj_num/num_batches)
             lrate = 0.005
+            fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0])}
             print ("Entering iterations_"+str(task_index))
             sys.stdout.flush()
             #if is_chief:
                 #sleep(0.01)
-            for ii in range(10):
+            for ii in range(5):
 
 
                 my_print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
                 #sys.stdout.flush()
 
                 #nos, exs, l1d,l2d,  q, l1, l2, int_vecs,step = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs, global_step], feed_dict=fd_dict)
-                _, step = sess.run([optimizer, global_step])
+                _, step = sess.run([optimizer, global_step], feed_dict=fd_dict)
                 #print (np.square(l1 + l2))
                 #sys.stdout.flush()
                 my_print (ii)
