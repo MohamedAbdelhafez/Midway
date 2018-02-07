@@ -52,7 +52,7 @@ def run_training(server, cluster_spec, num_workers, task_index) :
             sv = tf.train.Supervisor(is_chief = is_chief,
                 init_op = init,
                 
-                recovery_wait_secs=0.001,
+                recovery_wait_secs=1,
                 global_step = global_step)
             # Create a session for running Ops on the Graph.
             #config = tf.ConfigProto(allow_soft_placement = True, device_filters=['/job:ps', '/job:worker/task:%d' % task_index])
@@ -62,11 +62,12 @@ def run_training(server, cluster_spec, num_workers, task_index) :
             if is_chief:
                 sv.start_queue_runners(sess, [chief_queue_runner])                
                 sess.run(init_token_op)
-                sleep(5)
+                
             print ("Entering iterations: ")
 
             for i in range(20):
-                
+                if is_chief:
+                    sleep(1)
                 source_data = numpy.random.normal(loc = 0.0, scale = 1.0, size = (100, 784))
                 labels_dense = numpy.clip(numpy.sum(source_data, axis = 1) / 5 + 5, 0, 9).astype(int)
                 labels_one_hot = dense_to_one_hot(labels_dense)
