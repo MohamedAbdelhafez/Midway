@@ -19,7 +19,7 @@ def dense_to_one_hot(labels_dense, num_classes = 10) :
     return labels_one_hot
 
 def run_training(server, cluster_spec, num_workers, task_index) :
-    is_chief = (task_index == 0)
+    is_chief = (task_index == 0 and job_name == "worker")
     with tf.Graph().as_default():        
         with tf.device(tf.train.replica_device_setter(cluster = cluster_spec)) :            
             with tf.device('/cpu:0') :
@@ -66,7 +66,7 @@ def run_training(server, cluster_spec, num_workers, task_index) :
 
             for i in range(10):
                 if is_chief:
-                    sleep(5)
+                    sleep(15)
                 source_data = numpy.random.normal(loc = 0.0, scale = 1.0, size = (100, 784))
                 labels_dense = numpy.clip(numpy.sum(source_data, axis = 1) / 5 + 5, 0, 9).astype(int)
                 labels_one_hot = dense_to_one_hot(labels_dense)
@@ -119,7 +119,7 @@ server = tf.train.Server(server_or_cluster_def=cluster,
 
 
 print(hosts)
-print(node_name,job_name)
+print(node_name,job_name,task_index)
 sys.stdout.flush()
 
 
