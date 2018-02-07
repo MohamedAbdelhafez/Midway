@@ -22,28 +22,28 @@ def run_training(server, cluster_spec, num_workers, task_index) :
     is_chief = (task_index == 0 and job_name == "worker")
     with tf.Graph().as_default():        
         with tf.device(tf.train.replica_device_setter(cluster = cluster_spec)) :            
-            with tf.device('/cpu:0') :
-                global_step = tf.get_variable('global_step', [],
-                    initializer = tf.constant_initializer(0), trainable = False)
-                            
-                # Create the model
-                x = tf.placeholder("float", [None, 784])
-                W = tf.Variable(tf.zeros([784, 10]))
-                b = tf.Variable(tf.zeros([10]))
-                y = tf.nn.softmax(tf.matmul(x, W) + b)
+            
+            global_step = tf.get_variable('global_step', [],
+                initializer = tf.constant_initializer(0), trainable = False)
 
-                # Define loss and optimizer
-                y_ = tf.placeholder("float", [None, 10])
-                cross_entropy = -tf.reduce_sum(y_ * tf.log(y))
-                opt = tf.train.GradientDescentOptimizer(0.01)
-                opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate = num_workers,
-                     total_num_replicas = num_workers)
-                train_step = opt.minimize(cross_entropy, global_step = global_step)
-                sync_replicas_hook = opt.make_session_run_hook(is_chief)
+            # Create the model
+            x = tf.placeholder("float", [None, 784])
+            W = tf.Variable(tf.zeros([784, 10]))
+            b = tf.Variable(tf.zeros([10]))
+            y = tf.nn.softmax(tf.matmul(x, W) + b)
 
-                # Test trained model
-                correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
-                accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+            # Define loss and optimizer
+            y_ = tf.placeholder("float", [None, 10])
+            cross_entropy = -tf.reduce_sum(y_ * tf.log(y))
+            opt = tf.train.GradientDescentOptimizer(0.01)
+            opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate = num_workers,
+                 total_num_replicas = num_workers)
+            train_step = opt.minimize(cross_entropy, global_step = global_step)
+            sync_replicas_hook = opt.make_session_run_hook(is_chief)
+
+            # Test trained model
+            correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+            accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
             init_token_op = opt.get_init_tokens_op()
             chief_queue_runner = opt.get_chief_queue_runner()
