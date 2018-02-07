@@ -814,7 +814,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                     my_print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
                     #sys.stdout.flush()
 
-                    nos, exs, l1d,l2d,  q, l1, l2, int_vecs = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs], feed_dict=fd_dict)
+                    nos, exs, l1d,l2d,  q, l1, l2, int_vecs,step = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs, global_step], feed_dict=fd_dict)
                     #_, step = sess.run([optimizer, global_step], feed_dict=fd_dict)
                     #print (np.square(l1 + l2))
                     #sys.stdout.flush()
