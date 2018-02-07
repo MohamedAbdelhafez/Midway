@@ -780,10 +780,11 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                                      
 
                                      init_op=init_op,
-                                     recovery_wait_secs=0.001,
+                                     recovery_wait_secs=10,
                                      global_step=global_step)
                 
-                config = tf.ConfigProto(allow_soft_placement = True)
+                config = tf.ConfigProto(allow_soft_placement = True,device_filters=["/job:ps", "/job:worker/task:%d" % task_index])
+                
                 sess = sv.prepare_or_wait_for_session(server.target, config = config)
 
                 
@@ -807,8 +808,8 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
                 print ("Entering iterations_"+str(task_index))
                 sys.stdout.flush()
-                if is_chief:
-                    sleep(0.01)
+                #if is_chief:
+                    #sleep(0.01)
                 for ii in range(5):
                     
 

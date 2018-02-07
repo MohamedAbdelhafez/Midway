@@ -54,9 +54,9 @@ def run_training(server, cluster_spec, num_workers, task_index) :
                 
                 recovery_wait_secs=0.1,
                 global_step = global_step)
-            # Create a session for running Ops on the Graph.
-            #config = tf.ConfigProto(allow_soft_placement = True, device_filters=['/job:ps', '/job:worker/task:%d' % task_index])
-            config = tf.ConfigProto(allow_soft_placement = True)
+            # Create a session for running Ops on the Graph. device_filters=["/job:ps", "/job:worker/task:%d" % FLAGS.task_index]
+            config = tf.ConfigProto(allow_soft_placement = True, device_filters=['/job:ps', '/job:worker/task:%d' % task_index])
+            #config = tf.ConfigProto(allow_soft_placement = True)
             sess = sv.prepare_or_wait_for_session(server.target, config = config)
 
             if is_chief:
