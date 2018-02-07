@@ -1126,7 +1126,6 @@ else:
 
 
 
-            unitary_scale = get_inner_product_2D(sys_para, final_state,final_state, num_vecs)
 
 
             reg_loss = loss
@@ -1196,7 +1195,7 @@ else:
             sys.stdout.flush()
             #if is_chief:
                 #sleep(0.01)
-            for ii in range(5):
+            for ii in range(10):
 
 
                 my_print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
