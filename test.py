@@ -379,7 +379,7 @@ if maxA is None:
 else:
     maxAmp = maxA
 
-Taylor_terms = 20
+Taylor_terms = [20,0]
 if state_transfer:
     no_scaling = True
 else:
