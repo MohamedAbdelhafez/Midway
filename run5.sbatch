@@ -16,13 +16,13 @@ module load Anaconda3/5.0.0.1
 which python
 source activate DL_CPU
 
-chmod u+x test2.py
+chmod u+x test.py
 unset http_proxy 
 unset https_proxy
-srun -n 1 -N 1 test2.py  & 
-srun -n 1 -N 1 test2.py  &
-srun -n 1 -N 1 test2.py  &
-srun -n 1 -N 1 test2.py 
+srun -n 1 -N 1 test.py  & 
+srun -n 1 -N 1 test.py  &
+srun -n 1 -N 1 test.py  &
+srun -n 1 -N 1 test.py 
 
 
 

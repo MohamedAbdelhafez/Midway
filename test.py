@@ -1391,32 +1391,11 @@ else:
             sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
             #Here we extract the gradients of the pulses
-            grad = opt.compute_gradients(reg_loss)
+            
 
-            grad_pack = tf.stack([g for g, _ in grad])
-            var = [v for _,v in grad]
+            
+            optimizer = opt.minimize(reg_loss, global_step = global_step)
 
-            grads =[tf.nn.l2_loss(g) for g, _ in grad]
-            grad_squared = tf.reduce_sum(tf.stack(grads))
-
-
-            gradients =[g for g, _ in grad]
-            avg_grad = tf.placeholder(tf.float32, shape = [1,len(sys_para.ops),sys_para.steps])
-
-            new_grad = zip(tf.unstack(avg_grad),var)
-            #new_grad = grad
-
-            if sys_para.traj:
-                #optimizer = opt.apply_gradients(new_grad, global_step = global_step)
-                #optimizer = opt.apply_gradients(grad, global_step = global_step)
-                optimizer = opt.minimize(reg_loss, global_step = global_step)
-
-
-            else:
-                optimizer = opt.apply_gradients(grad)
-
-
-            #optimizer = opt.apply_gradients(grad)
 
             print ("Optimizer initialized.")
             sys.stdout.flush()
