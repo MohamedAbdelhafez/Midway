@@ -62,6 +62,7 @@ def run_training(server, cluster_spec, num_workers, task_index) :
             if is_chief:
                 sv.start_queue_runners(sess, [chief_queue_runner])                
                 sess.run(init_token_op)
+                sleep(5)
             print ("Entering iterations: ")
 
             for i in range(20):
