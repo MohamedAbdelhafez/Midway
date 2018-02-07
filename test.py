@@ -349,7 +349,7 @@ def divide(needed,max_traj):
 
 # start time
 grape_start_time = time.time()
-freq_unit = "ns"
+freq_unit = "GHz"
 # set timing unit used for plotting
 freq_time_unit_dict = {"GHz": "ns", "MHz": "us","KHz":"ms","Hz":"s"}
 time_unit = freq_time_unit_dict[freq_unit]
