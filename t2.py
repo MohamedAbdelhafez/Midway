@@ -136,7 +136,7 @@ expect_op = IX
 file_name='JC'
 trajectories = 300
 do_all_traj = False,
-data_path = str(currentdir)+'/Data'
+data_path = None
 save = False
 use_inter_vecs=True
 
