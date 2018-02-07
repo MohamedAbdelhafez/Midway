@@ -1452,7 +1452,9 @@ else:
             sys.stdout.flush()
             if is_chief:
                 sleep(0.01)
-            for ii in range(13):
+            for ii in range(100):
+                
+                sleep(random_sample())
 
 
                 my_print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
