@@ -52,7 +52,7 @@ def run_training(server, cluster_spec, num_workers, task_index) :
             sv = tf.train.Supervisor(is_chief = is_chief,
                 init_op = init,
                 
-                recovery_wait_secs=1,
+                recovery_wait_secs=0.001,
                 global_step = global_step)
             # Create a session for running Ops on the Graph.
             #config = tf.ConfigProto(allow_soft_placement = True, device_filters=['/job:ps', '/job:worker/task:%d' % task_index])
