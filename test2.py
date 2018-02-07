@@ -1049,13 +1049,12 @@ else:
             inter_lst = []
             #start = tf.placeholder(tf.float32,shape=[])
             #end = tf.placeholder(tf.float32,shape=[])
-            start = tf.placeholder(tf.float32,shape=[len(sys_para.initial_vectors)])
-            end = tf.placeholder(tf.float32,shape=[len(sys_para.initial_vectors)])
+            
             psi0 = packed_initial_vectors
             old_psi = psi0
             new_psi = psi0
             norms = tf.ones([num_vecs],dtype = tf.float32)
-            r=get_random(sys_para,num_trajs,  start,end,num_vecs)
+            
             operator = tf_c_ops[0] # temporary
             expects = []
             inter_vecs_list=[]
@@ -1112,74 +1111,36 @@ else:
             sys.stdout.flush()
 
 
-            if sys_para.state_transfer == False:
 
-                final_vecs = tf.matmul(final_state, packed_initial_vectors)
+            #loss = tf.constant(0.0, dtype = tf.float32)
+            
 
-                loss = 1-get_inner_product_2D(sys_para, final_vecs,target_vecs, num_vecs)
-
-            else:
-                #loss = tf.constant(0.0, dtype = tf.float32)
-                final_state = inter_vecs_packed[:,sys_para.steps,:]
-                a = []
-                for ii in range (sys_para.steps):
-                    a.append(tf.constant((sys_para.steps-ii), dtype = tf.float32))
-                accelerate = tf.stack(a)
-                accelerate = tf.ones([sys_para.steps])
-                #
-                if sys_para.expect:
-
-                    Il1 = tf.reduce_sum(expectations[:,0,0])  
-                    Il2 = -tf.reduce_sum(expectations[:,1,0])
-                    Il = Il1 + Il2
-                    Il1d = tf.gradients(Il1, [ops_weight_base])[0]
-                    Il2d = tf.gradients(Il2, [ops_weight_base])[0]
-                    loss = - tf.square(Il)
-                    quad = tf.gradients(loss, [ops_weight_base])[0]
+            Il1 = tf.reduce_sum(expectations[:,0,0])  
+            Il2 = -tf.reduce_sum(expectations[:,1,0])
+            Il = Il1 + Il2
+            Il1d = tf.gradients(Il1, [ops_weight_base])[0]
+            Il2d = tf.gradients(Il2, [ops_weight_base])[0]
+            loss = - tf.square(Il)
+            quad = tf.gradients(loss, [ops_weight_base])[0]
 
 
 
 
-                unitary_scale = get_inner_product_2D(sys_para, final_state,final_state, num_vecs)
+            unitary_scale = get_inner_product_2D(sys_para, final_state,final_state, num_vecs)
 
 
             reg_loss = loss
 
             print ("Training loss initialized.")
             sys.stdout.flush()
-            learning_rate = tf.placeholder(tf.float32,shape=[])
-            opt = tf.train.GradientDescentOptimizer(learning_rate = learning_rate)
+            
+            opt = tf.train.GradientDescentOptimizer(0.05)
             opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate=len(hosts)-1,
                                     total_num_replicas=len(hosts)-1)
             sync_replicas_hook = opt.make_session_run_hook(is_chief)
+            optimizer = opt.minimize(reg_loss, global_step = global_step)
 
-            #Here we extract the gradients of the pulses
-            grad = opt.compute_gradients(reg_loss)
-
-            grad_pack = tf.stack([g for g, _ in grad])
-            var = [v for _,v in grad]
-
-            grads =[tf.nn.l2_loss(g) for g, _ in grad]
-            grad_squared = tf.reduce_sum(tf.stack(grads))
-
-
-            gradients =[g for g, _ in grad]
-            avg_grad = tf.placeholder(tf.float32, shape = [1,len(sys_para.ops),sys_para.steps])
-
-            new_grad = zip(tf.unstack(avg_grad),var)
-            #new_grad = grad
-
-            if sys_para.traj:
-                #optimizer = opt.apply_gradients(new_grad, global_step = global_step)
-                #optimizer = opt.apply_gradients(grad, global_step = global_step)
-                optimizer = opt.minimize(reg_loss, global_step = global_step)
-
-
-            else:
-                optimizer = opt.apply_gradients(grad)
-
-
-            #optimizer = opt.apply_gradients(grad)
+            
 
             print ("Optimizer initialized.")
             sys.stdout.flush()
@@ -1231,7 +1192,6 @@ else:
             num_batches = len(hosts)-1
             num_traj_batch = int(traj_num/num_batches)
             lrate = 0.005
-            fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0])}
             print ("Entering iterations_"+str(task_index))
             sys.stdout.flush()
             #if is_chief:
@@ -1243,7 +1203,7 @@ else:
                 #sys.stdout.flush()
 
                 #nos, exs, l1d,l2d,  q, l1, l2, int_vecs,step = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs, global_step], feed_dict=fd_dict)
-                _, step = sess.run([optimizer, global_step], feed_dict=fd_dict)
+                _, step = sess.run([optimizer, global_step])
                 #print (np.square(l1 + l2))
                 #sys.stdout.flush()
                 my_print (ii)
