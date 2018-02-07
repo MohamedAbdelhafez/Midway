@@ -1094,102 +1094,7 @@ else:
                 
                 new_psi = old_psi/tf.reduce_sum(H_weights[:,ii])
                 #new_psi = matvecexp_op(H_weights[:,ii],tf_matrix_list,old_psi)
-                new_norms = tf.reshape(get_norms(sys_para, new_psi, num_vecs),[num_vecs])
-
-                norms = tf.multiply(norms,new_norms)
-                all_norms.append(norms)
-
-                cond= tf.less(norms,r)
-                a=tf.where(cond)
-                state_num=sys_para.state_num
-                reshaped_new = tf.reshape(new_psi,[2*state_num*num_vecs])
-
-                c = tf.constant(0)
-                def while_condition(c,old,new,norms,randoms):
-                    return tf.less(c, tf.size(a))
-                def jump_fn(c,old,new,norms,randoms):
-
-
-                    index = tf.reshape(tf.gather(a,c),[])
-                    idx = []
-
-                    for kk in range (2*state_num):
-                        idx.append(index + kk*vecs)
-
-                    vector = tf.gather(reshaped_new,idx)
-                    #vector = tf.gather(tf.transpose(old),index)
-
-
-                    #####
-
-
-                    if len(sys_para.c_ops)>1:
-                        weights=[]
-                        sums=[]
-                        s=0
-                        for ii in range (len(sys_para.c_ops)):
-
-                            temp=tf.matmul(tf.transpose(tf.reshape(vector,[2*state_num,1])),tf_cdagger_c[ii,:,:])
-                            temp2=tf.matmul(temp,tf.reshape(vector,[2*state_num,1])) #get the jump expectation value
-                            weights=tf.concat([weights,tf.reshape(temp2,[1])],0)
-                        weights=tf.abs(weights/tf.reduce_sum(tf.abs(weights))) #convert them to probabilities
-
-                        for jj in range (len(sys_para.c_ops)):
-                            #create a list of their summed probabilities
-                            s=s+weights[jj]
-                            sums=tf.concat([sums,tf.reshape(s,[1])],0)
-
-                        r2 = tf.random_uniform([1],0,1)
-                        #tensorflow conditional graphing, checks for the first time a summed probability exceeds the random number
-                        rvector=r2 * tf.ones_like(sums)
-                        cond2= tf.greater_equal(sums,rvector)
-                        b=tf.where(cond2)
-                        final =tf.reshape(b[0,:],[])
-                        #final = tf.gather(b,0)
-
-                        #apply the chosen jump operator
-                        propagator2 = tf.reshape(tf.gather(tf_c_ops,final),[2*sys_para.state_num,2*sys_para.state_num])
-                    else:
-                        propagator2 = tf.reshape(tf_c_ops,[2*sys_para.state_num,2*sys_para.state_num])
-                    inter_vec_temp2 = tf.matmul(propagator2,tf.reshape(vector,[2*sys_para.state_num,1]))
-                    norm2 = get_norm(sys_para, inter_vec_temp2)
-                    inter_vec_temp2 = inter_vec_temp2 / tf.sqrt(norm2)
-
-                    #delta = tf.reshape(inter_vec_temp2 - tf.gather(tf.transpose(new),index),[2*sys_para.state_num])
-
-                    new_vector = tf.reshape(tf.gather(tf.reshape(new,[2*state_num*num_vecs]),idx),[2*sys_para.state_num])
-                    inter_vec_temp2 = tf.reshape(inter_vec_temp2,[2*sys_para.state_num])
-                    #delta = inter_vec_temp2 
-                    delta = inter_vec_temp2-new_vector
-                    indices=[]
-                    for jj in range (2*sys_para.state_num):
-                        indices.append([jj,index])
-
-                    values = delta
-                    shape = tf.cast(tf.stack([2*sys_para.state_num,num_vecs]),tf.int64)
-                    Delta = tf.SparseTensor(indices, values, shape)
-                    new = new + tf.sparse_tensor_to_dense(Delta)
-
-
-                    values = tf.reshape(1 - tf.gather(norms,index),[1])
-                    shape = tf.cast(tf.stack([num_vecs]),tf.int64)
-                    Delta_norm = tf.SparseTensor(tf.reshape(index,[1,1]), values, shape)
-                    norms = norms + tf.sparse_tensor_to_dense(Delta_norm)
-
-                    #new_random = get_one_random(start, end,index)
-                    new_random =tf.random_uniform([1],0,1)
-                    values = tf.reshape(new_random - tf.gather(randoms,index),[1])
-                    #shape = tf.stack([num_vecs])
-                    Delta_norm = tf.SparseTensor(tf.reshape(index,[1,1]), values, shape)
-                    randoms = randoms + tf.sparse_tensor_to_dense(Delta_norm)
-
-                    #####
-
-                    return [tf.add(c, 1),old,new,norms,randoms]
-
-                wh,old_psi,new_psi,norms,r = tf.while_loop(while_condition, jump_fn, [c,old_psi,new_psi,norms,r])
-                all_jumps.append(wh)
-
+                
 
                 new_psi = normalize(sys_para, new_psi, num_vecs)
 
@@ -1200,7 +1105,7 @@ else:
 
             inter_vecs_packed = tf.stack(inter_vecs_list, axis=1)
             inter_vecs = inter_vecs_packed
-            all_norms = tf.stack(all_norms)
+            
             if sys_para.expect:
                 if sys_para.do_all:
                     expectations = tf.stack(expects, axis=1)
@@ -1224,8 +1129,6 @@ else:
             #psi0 = inter_vec
 
 
-            all_jumps = tf.stack(all_jumps)
-            jumps.append(jumps)
             #jumps = tf.stack(jumps)
             #for tf_initial_vector in tf_initial_vectors:
                 #Evolution_states.append(One_Trajectory(tf_initial_vector)) #returns the final state of the trajectory
