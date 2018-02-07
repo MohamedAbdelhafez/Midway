@@ -1447,11 +1447,11 @@ else:
             num_batches = len(hosts)-1
             num_traj_batch = int(traj_num/num_batches)
             lrate = 0.005
-            fd_dict = { start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
+            fd_dict = {start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
             print ("Entering iterations_"+str(task_index))
             sys.stdout.flush()
             if is_chief:
-                #sleep(0.01)
+                sleep(0.01)
             for ii in range(13):
 
 
