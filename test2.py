@@ -1042,8 +1042,8 @@ else:
                     tf_initial_vectors.append(tf_initial_vector)
                 packed_initial_vectors = tf.transpose(tf.stack(tf_initial_vectors))
 
-            H0_weight = tf.Variable(tf.ones([sys_para.steps]), trainable=False) #Just a vector of ones needed for the kernel
-            weights_unpacked=[H0_weight] #will collect all weights here
+            #H0_weight = tf.Variable(tf.ones([sys_para.steps]), trainable=False) #Just a vector of ones needed for the kernel
+            weights_unpacked=[] #will collect all weights here
             ops_weight_base = tf.Variable(tf.constant(sys_para.ops_weight_base, dtype = tf.float32), dtype=tf.float32,name ="weights_base")
 
             ops_weight = tf.sin(ops_weight_base,name="weights")
