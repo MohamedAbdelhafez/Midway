@@ -779,7 +779,7 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                                      logdir="/tmp",
 
                                      init_op=init_op,
-                                     recovery_wait_secs=0.1,
+                                     recovery_wait_secs=2,
                                      global_step=global_step)
                 
                 config = tf.ConfigProto(allow_soft_placement = True)
