@@ -2,16 +2,12 @@
 
 import numpy as np
 import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,currentdir+"/Packages2") 
-from main_grape.Grape_original2 import Grape
+
 
 import tensorflow as tf
 import numpy as np
 import scipy.linalg as la
-from core.TensorflowState import TensorflowState
-from core.SystemParameters import SystemParameters
+
 #from core.Convergence import Convergence
 #from core.run_session import run_session
 
@@ -19,12 +15,544 @@ from core.SystemParameters import SystemParameters
 import random as rd
 import time
 import math
-from helper_functions.grape_functions import c_to_r_mat, sort_ev
-from core.RegularizationFunctions import get_reg_loss
+
 from tensorflow.python.framework import function
 from tensorflow.python.framework import ops
 from time import sleep
 from numpy.random import random_sample
+
+def get_avg(av,average_path,iterations):
+    #Averaging trajectory gradients
+    a1 = iterations * average_path
+    a2 = np.add(av,a1)
+    return np.divide(a2,(iterations + 1))
+
+def dressed_unitary(U,v,dressed_id):
+    # get unitary matrix in dressed basis
+    conversion_U = sort_ev(v,dressed_id)
+    return np.dot(np.dot(conversion_U,U),np.conjugate(np.transpose(conversion_U)))
+
+def get_dressed_info(H0):
+    # assign index of the dressed state according to the overall with bare state
+    w_c, v_c = la.eig(H0)
+    dressed_id=[]
+    for ii in range(len(v_c)):
+        index = np.argmax(np.abs(v_c[:, ii]))
+        if index not in dressed_id:
+            dressed_id.append(index)
+        else:
+            temp = (np.abs(v_c[:, ii])).tolist()
+            while index in dressed_id:
+                temp[index] = 0
+                index = np.argmax(temp)
+            dressed_id.append(index)
+            
+    return w_c, v_c, dressed_id
+
+def qft(N):
+    # quantum fourier transform operator
+    phase = 2.0j * np.pi / (2**N)
+    L, M = np.meshgrid(np.arange(2**N), np.arange(2**N))
+    L = np.exp(phase * (L * M))
+    q = 1.0 / np.sqrt(2**N) * L
+    return q
+    
+def hamming_distance(x):
+    tot = 0
+    while x:
+        tot += 1
+        x &= x - 1
+    return tot
+
+def Hadamard (N=1):
+    # Hadamard gate
+    Had = (2.0 ** (-N / 2.0)) * np.array([[((-1) ** hamming_distance(i & j))
+                                      for i in range(2 ** N)]
+                                     for j in range(2 ** N)])
+    return Had
+
+def concerned(N,levels):
+    concern = []
+    for ii in range (levels**N):
+        ii_b = Basis(ii,N,levels)
+        if is_binary(ii_b):
+            concern.append(ii)
+    return concern
+        
+def is_binary(num):
+    flag = True
+    for c in num: 
+        if c!='0' and c!='1':
+            flag = False
+            break
+    return flag
+    
+def transmon_gate(gate,levels):
+    N = int(np.log2(len(gate)))
+    result = np.identity(levels**N,dtype=complex)
+    for ii in range (len(result)):
+        for jj in range(len(result)):
+            ii_b = Basis(ii,N,levels)
+            jj_b = Basis(jj,N,levels)
+            if is_binary(ii_b) and is_binary(jj_b):
+                result[ii,jj]=gate[int(ii_b, 2),int(jj_b, 2)]
+                
+    return result
+def rz(theta):
+    return [[np.exp(-1j * theta / 2), 0],[0, np.exp(1j * theta / 2)]]
+def rx (theta):
+    return [[np.cos(theta / 2), -1j * np.sin(theta / 2)],
+                     [-1j * np.sin(theta / 2), np.cos(theta / 2)]]
+
+
+def Bin(a,N):
+    a_bin = np.binary_repr(a)
+    while len(a_bin) < N:
+        a_bin = '0'+a_bin
+    return a_bin
+
+def baseN(num,b,numerals="0123456789abcdefghijklmnopqrstuvwxyz"):
+    return ((num == 0) and numerals[0]) or (baseN(num // b, b, numerals).lstrip(numerals[0]) + numerals[num % b])
+
+def Basis(a,N,r):
+    a_new = baseN(a,r)
+    while len(a_new) < N:
+        a_new = '0'+a_new
+    return a_new
+    
+    
+def kron_all(op,num,op_2): 
+    # returns an addition of sth like xii + ixi + iix for op =x and op_2 =i
+    total = np.zeros([len(op)**num,len(op)**num])
+    a=op
+    for jj in range(num):
+        if jj != 0:
+            a = op_2
+        else:
+            a = op
+            
+        for ii in range(num-1):
+            if (jj - ii) == 1:
+                
+                b = op
+            else:
+                b = op_2
+            a = np.kron(a,b)
+        total = total + a
+    return a    
+
+def multi_kron(op,num): 
+    #returns xx...x
+    a=op
+    for ii in range(num-1):
+        a = np.kron(a,op)
+    return a
+
+def append_separate_krons(op,name,num,state_num,Hops,Hnames,ops_max_amp,amp=4.0): 
+    #appends xii,ixi,iix separately
+    string = name
+    I_q = np.identity(state_num)
+    x = 1
+    y = 1
+    z = 1
+    X1 = op
+    while(x < num):
+        X1 = np.kron(X1, I_q)
+        x = x + 1
+    Hops.append(X1)
+    ops_max_amp.append(amp)
+    x = 1
+    while(x < num):
+        string = string + 'i'
+        x = x+1
+    Hnames.append(string)
+
+    x = 1
+
+    while(x < num):
+        X1 = I_q
+        string = 'i'
+        while(y<num):
+            if(y==x):
+                X1 = np.kron(X1, op)
+                y = y + 1
+                string = string + name
+            else:
+                X1 = np.kron(X1, I_q)
+                y = y + 1
+                string = string + 'i'
+        x = x + 1
+        y=1
+        Hops.append(X1)
+        ops_max_amp.append(amp)
+        Hnames.append(string)
+    return Hops,Hnames,ops_max_amp
+
+def nn_chain_kron(op, op_I, qubit_num, qubit_state_num): 
+    # nearest neighbour kron: e.g. xxii + ixxi + iixx
+    op_list = ['I']*(qubit_num-2)
+    op_list = ['OP','OP'] + op_list
+    
+    
+    a_all = np.zeros([qubit_state_num**qubit_num,qubit_state_num**qubit_num])
+    for ii in range(qubit_num-1):
+        
+        if op_list[0] == 'I':
+            a = op_I
+        else:
+            a = op
+            
+        for kk in range(1,qubit_num):
+            if op_list[kk] == 'I':
+                b = op_I
+            else:
+                b = op
+            a = np.kron(a,b)
+        
+        a_all = a_all + a
+        
+        op_list = [op_list[-1]] + op_list[:-1]
+        
+    
+    return a_all
+
+
+def sort_ev(v,dressed_id):
+    # sort the eigenstates according to bare states
+    v_sorted=[]
+    
+    for ii in range (len(dressed_id)):
+        v1 = v[:,get_state_index(ii,dressed_id)]
+        v_sorted.append(v1)
+    
+    return np.transpose(np.reshape(v_sorted, [len(dressed_id),len(dressed_id)]))
+
+def get_state_index(bareindex,dressed_id):
+    # get the index of dressed state, with maximum overlap with the corresponding bare state
+    if len(dressed_id) > 0:
+        return dressed_id.index(bareindex)
+    else:
+        return bareindex
+    
+def c_to_r_mat(M):
+    # complex to real isomorphism for matrix
+    return np.asarray(np.bmat([[M.real,-M.imag],[M.imag,M.real]]))
+
+def c_to_r_vec(V):
+    # complex to real isomorphism for vector
+    new_v =[]
+    new_v.append(V.real)
+    new_v.append(V.imag)
+    return np.reshape(new_v,[2*len(V)])
+        
+
+
+
+class SystemParameters:
+
+    def __init__(self,H0,Hops,Hnames,U,U0,total_time,steps,states_concerned_list,dressed_info,maxA, draw,initial_guess, show_plots,Unitary_error,state_transfer,no_scaling,reg_coeffs, save, file_path, Taylor_terms,use_gpu,use_inter_vecs,sparse_H,
+                sparse_U,sparse_K, c_ops,trajectories, do_all, expect_op):
+        # Input variable
+        self.sparse_U = sparse_U
+        self.sparse_H = sparse_H
+        self.sparse_K = sparse_K
+        self.use_inter_vecs = use_inter_vecs
+        self.use_gpu = use_gpu
+        self.Taylor_terms = Taylor_terms
+        self.dressed_info = dressed_info
+        self.reg_coeffs = reg_coeffs
+        self.file_path = file_path
+        self.state_transfer = state_transfer
+        self.no_scaling = no_scaling
+        self.save = save
+        self.H0_c = H0
+        self.ops_c = Hops
+        self.ops_max_amp = maxA
+        self.Hnames = Hnames
+        self.Hnames_original = Hnames #because we might rearrange them later if we have different timescales 
+        self.total_time = total_time
+        self.steps = steps
+        self.show_plots = show_plots
+        self.Unitary_error= Unitary_error
+        self.trajectories = trajectories
+        self.c_ops = c_ops
+        self.traj = False
+        self.do_all = do_all
+        self.expect_op = expect_op
+        self.expect = False
+        if self.expect_op != []:
+            self.expect = True
+
+
+        if initial_guess is not None:
+            # transform initial_guess to its corresponding base value
+            self.u0 = initial_guess
+            self.u0_base = np.zeros_like(self.u0)
+            for ii in range (len(self.u0_base)):
+                self.u0_base[ii]= self.u0[ii]/self.ops_max_amp[ii]
+                if max(self.u0_base[ii])> 1.0:
+                    raise ValueError('Initial guess has strength > max_amp for op %d' % (ii) )
+            self.u0_base = np.arcsin(self.u0_base) #because we take the sin of weights later
+                
+                
+
+            
+        else:
+            self.u0 =[]
+        self.states_concerned_list = states_concerned_list
+
+        self.is_dressed = False
+        self.U0_c = U0
+        self.initial_unitary = c_to_r_mat(U0) #CtoRMat is converting complex matrices to their equivalent real (double the size) matrices
+        if self.expect:
+            self.expect_op = c_to_r_mat(self.expect_op)
+        
+        if draw is not None:
+            self.draw_list = draw[0]
+            self.draw_names = draw[1]
+        else:
+            self.draw_list = []
+            self.draw_names = []
+        
+        
+        if dressed_info !=None:
+            self.v_c = dressed_info['eigenvectors']
+            self.dressed_id = dressed_info['dressed_id']
+            self.w_c = dressed_info['eigenvalues']
+            self.is_dressed = dressed_info['is_dressed']
+            self.H0_diag=np.diag(self.w_c)
+            
+        self.init_system()
+        self.init_vectors()
+        
+        if self.c_ops !=None:
+            self.traj = True
+            self.state_transfer = True
+            if len(U) != len(states_concerned_list):
+                full_U = U
+                U=[]
+                for ii in range(len(states_concerned_list)):
+                    U.append(np.dot(full_U,self.initial_vectors_c[ii]))
+        
+        if self.state_transfer == False:
+            self.target_unitary = c_to_r_mat(U)
+        else:
+            self.target_vectors=[]
+            self.target_vectors_c=[]
+
+            for target_vector_c in U:
+                self.target_vector = c_to_r_vec(target_vector_c)
+                self.target_vectors.append(self.target_vector)
+                self.target_vectors_c.append(target_vector_c)
+        
+        if self.traj:
+            self.cdaggerc=[]
+            self.c_ops_real=[]
+            
+                   
+            #ceating the effective hamiltonian that describes the evolution of states if no jumps occur
+            for ii in range (len(self.c_ops)):
+                cdaggerc_c = np.dot(np.transpose(np.conjugate(self.c_ops[ii])),self.c_ops[ii])
+                self.c_ops_real.append(c_to_r_mat(self.c_ops[ii]))
+                self.cdaggerc.append(c_to_r_mat(cdaggerc_c))
+                self.H0_c= self.H0_c + ((0-1j)/2)* ( cdaggerc_c)
+                
+        self.init_operators()
+        self.init_one_minus_gaussian_envelope()
+        self.init_guess()
+
+    def approx_expm(self,M,exp_t, scaling_terms): 
+        #approximate the exp at the beginning to estimate the number of taylor terms and scaling and squaring needed
+        U=np.identity(len(M),dtype=M.dtype)
+        Mt=np.identity(len(M),dtype=M.dtype)
+        factorial=1.0 #for factorials
+        
+        for ii in range(1,exp_t):
+            factorial*=ii
+            Mt=np.dot(Mt,M)
+            U+=Mt/((2.**float(ii*scaling_terms))*factorial) #scaling by 2**scaling_terms
+
+        
+        for ii in range(scaling_terms):
+            U=np.dot(U,U) #squaring scaling times
+        
+        return U
+    
+    def approx_exp(self,M,exp_t, scaling_terms): 
+        # the scaling and squaring of matrix exponential with taylor expansions
+        U=1.0
+        Mt=1.0
+        factorial=1.0 #for factorials
+        
+        for ii in range(1,exp_t):
+            factorial*=ii
+            Mt=M*Mt
+            U+=Mt/((2.**float(ii*scaling_terms))*factorial) #scaling by 2**scaling_terms
+
+        
+        for ii in range(scaling_terms):
+            U=np.dot(U,U) #squaring scaling times
+        
+        return U
+    
+    def Choose_exp_terms(self, d): 
+        #given our hamiltonians and a number of scaling/squaring, we determine the number of Taylor terms
+        
+
+        exp_t = 30 #maximum
+
+        H=self.H0_c
+        U_f = self.U0_c
+        for ii in range (len(self.ops_c)):
+            H = H + self.ops_max_amp[ii]*self.ops_c[ii]
+        if d == 0:
+            self.scaling = max(int(2*np.log2(np.max(np.abs(-(0+1j) * self.dt*H)))),0) 
+
+        else:
+            self.scaling += d
+
+        if self.state_transfer or self.no_scaling:
+            self.scaling =0
+        while True:
+
+            if len(self.H0_c) < 10:
+                for ii in range (self.steps):
+                    U_f = np.dot(U_f,self.approx_expm((0-1j)*self.dt*H, exp_t, self.scaling))
+                Metric = np.abs(np.trace(np.dot(np.conjugate(np.transpose(U_f)), U_f)))/(self.state_num)
+            else:
+                max_term = np.max(np.abs(-(0+1j) * self.dt*H))
+                
+                Metric = 1 + self.steps *np.abs((self.approx_exp(max_term, exp_t, self.scaling) - np.exp(max_term))/np.exp(max_term))
+
+            if exp_t == 3:
+                break
+            if np.abs(Metric - 1.0) < self.Unitary_error:
+                exp_t = exp_t-1
+            else:
+                break
+        
+        return exp_t
+
+
+
+        
+    def init_system(self):
+        self.dt = float(self.total_time)/self.steps        
+        self.state_num= len(self.H0_c)
+        
+        
+    def init_vectors(self):
+        # initialized vectors used for propagation
+        self.initial_vectors=[]
+        self.initial_vectors_c=[]
+
+        for state in self.states_concerned_list:
+            if self.is_dressed:
+                self.initial_vector_c= self.v_c[:,get_state_index(state,self.dressed_id)]
+            else:
+                self.initial_vector_c=np.zeros(self.state_num)
+                self.initial_vector_c[state]=1
+            
+            self.initial_vectors_c.append(self.initial_vector_c)
+            self.initial_vector = c_to_r_vec(self.initial_vector_c)
+
+            self.initial_vectors.append(self.initial_vector)
+        
+        
+
+    def init_operators(self):
+        # Create operator matrix in numpy array
+
+        self.ops=[]
+        for op_c in self.ops_c:
+            op = c_to_r_mat(-1j*self.dt*op_c)
+            self.ops.append(op)
+        
+        self.ops_len = len(self.ops)
+
+        self.H0 = c_to_r_mat(-1j*self.dt*self.H0_c)
+        self.identity_c = np.identity(self.state_num)
+        self.identity = c_to_r_mat(self.identity_c)
+        
+        if self.Taylor_terms is None:
+            self.exps =[]
+            self.scalings = []
+            if self.state_transfer or self.no_scaling:
+                comparisons = 1
+            else:
+                comparisons = 6
+            d = 0
+            while comparisons >0:
+
+                self.exp_terms = self.Choose_exp_terms(d)
+                self.exps.append(self.exp_terms)
+                self.scalings.append(self.scaling)
+                comparisons = comparisons -1
+                d = d+1
+            self.complexities = np.add(self.exps,self.scalings)
+            a = np.argmin(self.complexities)
+
+            self.exp_terms = self.exps[a]
+            self.scaling = self.scalings[a]
+        else:
+            self.exp_terms = self.Taylor_terms[0]
+            self.scaling = self.Taylor_terms[1]
+            
+        
+        
+        print ("Using "+ str(self.exp_terms) + " Taylor terms and "+ str(self.scaling)+" Scaling & Squaring terms")
+        
+        i_array = np.eye(2*self.state_num)
+        op_matrix_I=i_array.tolist()
+        
+        self.H_ops = []
+        for op in self.ops:
+            self.H_ops.append(op)
+        self.matrix_list = [self.H0]
+        for ii in range(self.ops_len):
+            self.matrix_list = self.matrix_list + [self.H_ops[ii]]
+        self.matrix_list = self.matrix_list + [op_matrix_I]
+        
+        self.matrix_list = np.array(self.matrix_list)
+        
+    def init_one_minus_gaussian_envelope(self):
+        # Generating the Gaussian envelope that pulses should obey
+        one_minus_gauss = []
+        offset = 0.0
+        overall_offset = 0.01
+        opsnum=self.ops_len
+        for ii in range(opsnum):
+            constraint_shape = np.ones(self.steps)- self.gaussian(np.linspace(-2,2,self.steps)) - offset
+            constraint_shape = constraint_shape * (constraint_shape>0)
+            constraint_shape = constraint_shape + overall_offset* np.ones(self.steps)
+            one_minus_gauss.append(constraint_shape)
+
+
+        self.one_minus_gauss = np.array(one_minus_gauss)
+
+
+    def gaussian(self,x, mu = 0. , sig = 1. ):
+        return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+
+    def init_guess(self):
+        # initail guess for control field
+        if self.u0 != []:
+            
+            self.ops_weight_base = np.reshape(self.u0_base, [self.ops_len,self.steps])
+        else:
+            initial_mean = 0
+            index = 0
+            
+            initial_stddev = (1./np.sqrt(self.steps))
+            self.ops_weight_base = np.random.normal(initial_mean, initial_stddev, [self.ops_len ,self.steps])
+        
+        self.raw_shape = np.shape(self.ops_weight_base)
+        
+        
+
+
+
+
 
 #Defining time scales
 total_time = 5

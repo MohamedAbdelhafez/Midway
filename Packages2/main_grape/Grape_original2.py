@@ -3,7 +3,6 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import numpy as np
 import scipy.linalg as la
-from core.TensorflowState import TensorflowState
 from core.SystemParameters import SystemParameters
 #from core.Convergence import Convergence
 #from core.run_session import run_session
@@ -13,7 +12,6 @@ import random as rd
 import time
 import math
 from helper_functions.grape_functions import c_to_r_mat, sort_ev
-from core.RegularizationFunctions import get_reg_loss
 from tensorflow.python.framework import function
 from tensorflow.python.framework import ops
 from time import sleep
@@ -836,3 +834,4 @@ def my_print(text):
     # run the optimization
     #SS = run_session(tfs,graph,conv,sys_para,method, show_plots = sys_para.show_plots, use_gpu = use_gpu)
     #return SS.uks,SS.Uf
+
