@@ -807,9 +807,10 @@ def Grape(H0,Hops,Hnames,U,total_time,steps,states_concerned_list,convergence = 
                 fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0]), num_trajs:num_traj_batch*np.ones([num_psi0])}
                 print ("Entering iterations_"+str(task_index))
                 sys.stdout.flush()
+                if is_chief:
+                    sleep(0.01)
                 for ii in range(5):
-                    if is_chief:
-                        sleep(0.01)
+                    
 
                     my_print('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories")
                     #sys.stdout.flush()
