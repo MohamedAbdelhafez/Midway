@@ -1194,7 +1194,7 @@ else:
             num_batches = len(hosts)-1
             num_traj_batch = int(traj_num/num_batches)
             lrate = 0.005
-            fd_dict = {learning_rate: lrate, start: np.zeros([num_psi0]), end: np.ones([num_psi0])}
+            fd_dict = {start: np.zeros([num_psi0]), end: np.ones([num_psi0])}
             print ("Entering iterations_"+str(task_index))
             sys.stdout.flush()
             #if is_chief:
