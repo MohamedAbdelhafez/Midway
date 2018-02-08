@@ -125,7 +125,7 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
                variable_averages=None,
                variables_to_average=None,
                use_locking=False,
-               name="sync_replicas"):
+               name="sync_replicas", y = None, g = None):
     """Construct a sync_replicas optimizer.
     Args:
       opt: The actual optimizer that will be used to compute and apply the
