@@ -85,7 +85,7 @@ def run_training(server, cluster_spec, num_workers, task_index) :
                 
             print ("Entering iterations: ")
 
-            for i in range(4):
+            for i in range(15):
                 if is_chief:
                     sleep(0.01)
                 source_data = np.random.normal(loc = 0.0, scale = 1.0, size = (100, 784))
