@@ -245,60 +245,33 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     
     
     
-    grad_accum_y = data_flow_ops.ConditionalAccumulator(
-                self.y.dtype,
-                shape=self.y.get_shape(),
-                shared_name= "y/grad_accum")
-    train_ops.append(grad_accum_y.apply_grad(
-                self.y, local_step=self._local_step))
-    aggregated_y = grad_accum_y.take_grad(
-                self._replicas_to_aggregate)
-    grad_accum_g = data_flow_ops.ConditionalAccumulator(
-                self.g.dtype,
-                shape=self.g.get_shape(),
-                shared_name= "g/grad_accum")
-    train_ops.append(grad_accum_g.apply_grad(
-                self.g, local_step=self._local_step))
-    aggregated_g.append(grad_accum_g.take_grad(
-                self._replicas_to_aggregate))
     
-    print (aggregated_y)
-    sys.stdout.flush()
-    print (aggregated_g)
-    sys.stdout.flush()
-    print (aggregated_y*aggregated_g)
-    sys.stdout.flush()
-    self._accumulator_list.append((grad_accum_y, self.y.device))
-    self._accumulator_list.append((grad_accum_g, self.g.device))
+   
 
     with ops.name_scope(None, self._name):
       for grad, var in grads_and_vars:
         var_list.append(var)
         with ops.device(var.device):
-          # Dense gradients.
-          if grad is None:
-            aggregated_grad.append(None)  # pass-through.
-            continue
-          elif isinstance(grad, ops.Tensor):
-            grad_accum = data_flow_ops.ConditionalAccumulator(
-                grad.dtype,
-                shape=var.get_shape(),
-                shared_name=var.name + "/grad_accum")
-            train_ops.append(grad_accum.apply_grad(
-                grad, local_step=self._local_step))
-            aggregated_grad.append(grad_accum.take_grad(
+          grad_accum_y = data_flow_ops.ConditionalAccumulator(
+                self.y.dtype,
+                shape=self.y.get_shape(),
+                shared_name= "y/grad_accum")
+          train_ops.append(grad_accum_y.apply_grad(
+                self.y, local_step=self._local_step))
+          aggregated_y = grad_accum_y.take_grad(
+                self._replicas_to_aggregate)
+          grad_accum_g = data_flow_ops.ConditionalAccumulator(
+                self.g.dtype,
+                shape=self.g.get_shape(),
+                shared_name= "g/grad_accum")
+          train_ops.append(grad_accum_g.apply_grad(
+                self.g, local_step=self._local_step))
+          aggregated_g.append(grad_accum_g.take_grad(
                 self._replicas_to_aggregate))
-          else:
-            if not isinstance(grad, ops.IndexedSlices):
-              raise ValueError("Unknown grad type!")
-            grad_accum = data_flow_ops.SparseConditionalAccumulator(
-                grad.dtype, shape=(), shared_name=var.name + "/grad_accum")
-            train_ops.append(grad_accum.apply_indexed_slices_grad(
-                grad, local_step=self._local_step))
-            aggregated_grad.append(grad_accum.take_indexed_slices_grad(
-                self._replicas_to_aggregate))
+          
 
-          self._accumulator_list.append((grad_accum, var.device))
+          self._accumulator_list.append((grad_accum_y, self.y.device))
+          self._accumulator_list.append((grad_accum_g, self.g.device))
       
       ag = aggregated_y *aggregated_g
       
