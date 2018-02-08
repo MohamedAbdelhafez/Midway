@@ -261,6 +261,13 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
                 self.g, local_step=self._local_step))
     aggregated_g.append(grad_accum_g.take_grad(
                 self._replicas_to_aggregate))
+    
+    print (aggregated_y)
+    sys.stdout.flush()
+    print (aggregated_g)
+    sys.stdout.flush()
+    print (aggregated_y*aggregated_g)
+    sys.stdout.flush()
     self._accumulator_list.append((grad_accum_y, self.y.device))
     self._accumulator_list.append((grad_accum_g, self.g.device))
 
