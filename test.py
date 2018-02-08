@@ -1389,7 +1389,7 @@ else:
             #learning_rate = tf.placeholder(tf.float32,shape=[])
             opt = tf.train.GradientDescentOptimizer(0.05)
             #opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate=len(hosts)-1,total_num_replicas=len(hosts)-1)
-            opt = sync(opt,replicas_to_aggregate=len(hosts)-1,total_num_replicas=len(hosts)-1,y1 = -2*Il1, y2 = -2*Il2,g1 = IL1d, g2 = IL2d  )
+            opt = sync(opt,replicas_to_aggregate=len(hosts)-1,total_num_replicas=len(hosts)-1,y1 = -2*Il1, y2 = -2*Il2,g1 = Il1d, g2 = Il2d  )
             sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
             #Here we extract the gradients of the pulses
