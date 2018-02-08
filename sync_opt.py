@@ -210,12 +210,14 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
       ValueError: If global step is not provided, the staleness cannot be
         checked.
     """
-    print (self.g)
-    print (self.y)
-    sys.stdout.flush()
-    for grad, var in grads_and_vars:
-        print (grad)
-        sys.stdout.flush()
+    grad_accum_y = data_flow_ops.ConditionalAccumulator(
+                self.y.dtype,
+                shape=self.y.get_shape(),
+                shared_name= "y/grad_accum")
+            train_ops.append(grad_accum.apply_grad(
+                grad, local_step=self._local_step))
+            aggregated_grad.append(grad_accum.take_grad(
+                self._replicas_to_aggregate))
         
     if not grads_and_vars:
       raise ValueError("Must supply at least one variable")
@@ -227,6 +229,9 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     train_ops = []
     aggregated_grad = []
     var_list = []
+    aggregated_y = []
+    
+    
 
     # local_anchor op will be placed on this worker task by default.
     local_anchor = control_flow_ops.no_op()
@@ -243,6 +248,28 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     chief_init_ops = [self.local_step_init_op]
     self.ready_for_local_init_op = variables.report_uninitialized_variables(
         variables.global_variables())
+    
+    
+    
+    
+    grad_accum_y = data_flow_ops.ConditionalAccumulator(
+                self.y.dtype,
+                shape=self.y.get_shape(),
+                shared_name= "y/grad_accum")
+            train_ops.append(grad_accum_y.apply_grad(
+                self.y, local_step=self._local_step))
+            aggregated_y.append(grad_accum_y.take_grad(
+                self._replicas_to_aggregate))
+    grad_accum_g = data_flow_ops.ConditionalAccumulator(
+                self.g.dtype,
+                shape=self.g.get_shape(),
+                shared_name= "g/grad_accum")
+            train_ops.append(grad_accum_g.apply_grad(
+                self.g, local_step=self._local_step))
+            aggregated_g.append(grad_accum_g.take_grad(
+                self._replicas_to_aggregate))
+    self._accumulator_list.append((grad_accum_y, y.device))
+    self._accumulator_list.append((grad_accum_g, g.device))
 
     with ops.name_scope(None, self._name):
       for grad, var in grads_and_vars:

@@ -47,8 +47,8 @@ def run_training(server, cluster_spec, num_workers, task_index) :
             # Create the model
             x = tf.placeholder("float", [None, 784])
             W = tf.Variable(tf.zeros([784, 10]))
-            b = tf.Variable(tf.zeros([10]))
-            y = tf.nn.softmax(tf.matmul(x, W) + b)
+            #b = tf.Variable(tf.zeros([10]))
+            y = tf.nn.softmax(tf.matmul(x, W) )
             g = tf.gradients(y, [W])[0]
 
             # Define loss and optimizer
