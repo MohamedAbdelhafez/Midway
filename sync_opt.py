@@ -293,7 +293,8 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
 
           self._accumulator_list.append((grad_accum, var.device))
 
-      aggregated_grads_and_vars = zip(aggregated_grad, var_list)
+      #aggregated_grads_and_vars = zip(aggregated_grad, var_list)
+      aggregated_grads_and_vars = zip(aggregated_y[0] *aggregated_g, var_list)
 
       # sync_op will be assigned to the same device as the global step.
       with ops.device(global_step.device), ops.name_scope(""):
