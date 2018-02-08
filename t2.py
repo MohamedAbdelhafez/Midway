@@ -7,10 +7,7 @@ from __future__ import print_function
 #import numpy, time
 #import tensorflow as tf
 #import os, sys
-from time import sleep
-from numpy.random import random_sample
-
-
+from sync_opt import SyncReplicasOptimizer as sync
 import numpy as np
 import os,sys,inspect
 
@@ -57,7 +54,7 @@ def run_training(server, cluster_spec, num_workers, task_index) :
             y_ = tf.placeholder("float", [None, 10])
             cross_entropy = -tf.reduce_sum(y_ * tf.log(y))
             opt = tf.train.GradientDescentOptimizer(0.01)
-            opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate = num_workers,
+            opt = sync(opt, replicas_to_aggregate = num_workers,
                  total_num_replicas = num_workers)
             train_step = opt.minimize(cross_entropy, global_step = global_step)
             sync_replicas_hook = opt.make_session_run_hook(is_chief)
