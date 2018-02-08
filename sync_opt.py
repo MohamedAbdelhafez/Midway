@@ -230,7 +230,7 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     aggregated_grad = []
     var_list = []
     aggregated_y = []
-    
+    aggregated_g = []
     
 
     # local_anchor op will be placed on this worker task by default.
@@ -256,17 +256,17 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
                 self.y.dtype,
                 shape=self.y.get_shape(),
                 shared_name= "y/grad_accum")
-            train_ops.append(grad_accum_y.apply_grad(
+    train_ops.append(grad_accum_y.apply_grad(
                 self.y, local_step=self._local_step))
-            aggregated_y.append(grad_accum_y.take_grad(
+    aggregated_y.append(grad_accum_y.take_grad(
                 self._replicas_to_aggregate))
     grad_accum_g = data_flow_ops.ConditionalAccumulator(
                 self.g.dtype,
                 shape=self.g.get_shape(),
                 shared_name= "g/grad_accum")
-            train_ops.append(grad_accum_g.apply_grad(
+    train_ops.append(grad_accum_g.apply_grad(
                 self.g, local_step=self._local_step))
-            aggregated_g.append(grad_accum_g.take_grad(
+    aggregated_g.append(grad_accum_g.take_grad(
                 self._replicas_to_aggregate))
     self._accumulator_list.append((grad_accum_y, y.device))
     self._accumulator_list.append((grad_accum_g, g.device))
