@@ -49,14 +49,15 @@ def run_training(server, cluster_spec, num_workers, task_index) :
             W = tf.Variable(tf.zeros([784, 10]))
             #b = tf.Variable(tf.zeros([10]))
             y = tf.nn.softmax(tf.matmul(x, W) )
-            g = tf.gradients(y, [W])[0]
+            mm = tf.reduce_sum(y)
+            g = tf.gradients(mm, [W])[0]
 
             # Define loss and optimizer
             y_ = tf.placeholder("float", [None, 10])
             cross_entropy = -tf.reduce_sum(y_ * tf.log(y))
             opt = tf.train.GradientDescentOptimizer(0.01)
             opt = sync(opt, replicas_to_aggregate = num_workers,
-                 total_num_replicas = num_workers, y = y, g = g )
+                 total_num_replicas = num_workers, y = mm, g = g )
             train_step = opt.minimize(cross_entropy, global_step = global_step)
             sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
