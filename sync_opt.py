@@ -224,7 +224,7 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     var_list = []
     
     aggregated_g = []
-    
+    my_grad = []
 
     # local_anchor op will be placed on this worker task by default.
     local_anchor = control_flow_ops.no_op()
@@ -301,12 +301,12 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
           self._accumulator_list.append((grad_accum, var.device))
       
       ag = aggregated_y *aggregated_g
-      my_grad = []
+      
       my_grad.append(ag[0])
       print (my_grad)
       sys.stdout.flush()
-      #aggregated_grads_and_vars = zip(my_grad, var_list)
-      aggregated_grads_and_vars = zip(aggregated_grad, var_list)
+      aggregated_grads_and_vars = zip(my_grad, var_list)
+      #aggregated_grads_and_vars = zip(aggregated_grad, var_list)
       #aggregated_grads_and_vars = zip(aggregated_y[0] *aggregated_g, var_list)
 
       # sync_op will be assigned to the same device as the global step.
