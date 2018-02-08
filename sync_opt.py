@@ -301,9 +301,11 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
           self._accumulator_list.append((grad_accum, var.device))
       
       aggregated_grad = aggregated_y *aggregated_g
-      print (aggregated_grad[0])
+      my_grad = []
+      my_grad.append(aggregated_grad[0])
+      print (my_grad)
       sys.stdout.flush()
-      aggregated_grads_and_vars = zip(aggregated_grad[0], var_list)
+      aggregated_grads_and_vars = zip(my_grad, var_list)
       #aggregated_grads_and_vars = zip(aggregated_y[0] *aggregated_g, var_list)
 
       # sync_op will be assigned to the same device as the global step.
