@@ -300,7 +300,7 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
 
           self._accumulator_list.append((grad_accum, var.device))
       
-      aggregated_grad = aggregated_y *aggregated_g
+      #aggregated_grad = aggregated_y *aggregated_g
 
       aggregated_grads_and_vars = zip(aggregated_grad, var_list)
       #aggregated_grads_and_vars = zip(aggregated_y[0] *aggregated_g, var_list)
