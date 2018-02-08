@@ -125,7 +125,7 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
                variable_averages=None,
                variables_to_average=None,
                use_locking=False,
-               name="sync_replicas", y = None, g = None):
+               name="sync_replicas", y1 = None, g1 = None, y2 = None, g2 = None):
     """Construct a sync_replicas optimizer.
     Args:
       opt: The actual optimizer that will be used to compute and apply the
@@ -162,8 +162,10 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     self._tokens_per_step = max(total_num_replicas, replicas_to_aggregate)
     self._global_step = None
     self._sync_token_queue = None
-    self.y = y
-    self.g = g
+    self.y1 = y1
+    self.g1 = g1
+    self.y2 = y2
+    self.g2 = g2
 
     # The synchronization op will be executed in a queue runner which should
     # only be executed by one of the replicas (usually the chief).
@@ -223,7 +225,8 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     aggregated_grad = []
     var_list = []
     
-    aggregated_g = []
+    aggregated_g1 = []
+    aggregated_g2 = []
     my_grad = []
 
     # local_anchor op will be placed on this worker task by default.
@@ -252,28 +255,48 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
       for grad, var in grads_and_vars:
         var_list.append(var)
         with ops.device(var.device):
-          grad_accum_y = data_flow_ops.ConditionalAccumulator(
-                self.y.dtype,
-                shape=self.y.get_shape(),
-                shared_name= "y/grad_accum")
-          train_ops.append(grad_accum_y.apply_grad(
-                self.y, local_step=self._local_step))
-          aggregated_y = grad_accum_y.take_grad(
+          grad_accum_y1 = data_flow_ops.ConditionalAccumulator(
+                self.y1.dtype,
+                shape=self.y1.get_shape(),
+                shared_name= "y1/grad_accum")
+          train_ops.append(grad_accum_y1.apply_grad(
+                self.y1, local_step=self._local_step))
+          aggregated_y1 = grad_accum_y1.take_grad(
                 self._replicas_to_aggregate)
-          grad_accum_g = data_flow_ops.ConditionalAccumulator(
-                self.g.dtype,
-                shape=self.g.get_shape(),
-                shared_name= "g/grad_accum")
-          train_ops.append(grad_accum_g.apply_grad(
-                self.g, local_step=self._local_step))
-          aggregated_g.append(grad_accum_g.take_grad(
+          grad_accum_y2 = data_flow_ops.ConditionalAccumulator(
+                self.y2.dtype,
+                shape=self.y2.get_shape(),
+                shared_name= "y2/grad_accum")
+          train_ops.append(grad_accum_y2.apply_grad(
+                self.y2, local_step=self._local_step))
+          aggregated_y2 = grad_accum_y2.take_grad(
+                self._replicas_to_aggregate)
+            
+          grad_accum_g1 = data_flow_ops.ConditionalAccumulator(
+                self.g1.dtype,
+                shape=self.g1.get_shape(),
+                shared_name= "g1/grad_accum")
+          train_ops.append(grad_accum_g1.apply_grad(
+                self.g1, local_step=self._local_step))
+          aggregated_g1.append(grad_accum_g1.take_grad(
+                self._replicas_to_aggregate))
+        
+          grad_accum_g2 = data_flow_ops.ConditionalAccumulator(
+                self.g2.dtype,
+                shape=self.g2.get_shape(),
+                shared_name= "g2/grad_accum")
+          train_ops.append(grad_accum_g2.apply_grad(
+                self.g2, local_step=self._local_step))
+          aggregated_g2.append(grad_accum_g2.take_grad(
                 self._replicas_to_aggregate))
           
 
-          self._accumulator_list.append((grad_accum_y, self.y.device))
-          self._accumulator_list.append((grad_accum_g, self.g.device))
+          self._accumulator_list.append((grad_accum_y1, self.y1.device))
+          self._accumulator_list.append((grad_accum_y2, self.y2.device))
+          self._accumulator_list.append((grad_accum_g2, self.g2.device))
+          self._accumulator_list.append((grad_accum_g1, self.g1.device))
       
-      ag = aggregated_y *aggregated_g
+      ag = aggregated_y1 *aggregated_g1 + aggregated_y2 *aggregated_g2
       
       my_grad.append(ag[0])
       print (my_grad)

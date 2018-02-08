@@ -20,6 +20,8 @@ from tensorflow.python.framework import function
 from tensorflow.python.framework import ops
 from time import sleep
 from numpy.random import random_sample
+from sync_opt import SyncReplicasOptimizer as sync
+
 
 def get_avg(av,average_path,iterations):
     #Averaging trajectory gradients
@@ -555,8 +557,8 @@ class SystemParameters:
 
 
 #Defining time scales
-total_time = 50
-steps = 500
+total_time = 5
+steps = 50
 state_transfer = True
 RWA = True
 RFT = True
@@ -574,7 +576,7 @@ kappa = 0.05
 gamma = 0.001
 g = 0.05
 
-mode_state_num = 25
+mode_state_num = 5
 #g = 2.*np.pi*0.1 #GHz
 fc = 5.0/(2*np.pi) #GHz
 state_num = qubit_state_num * mode_state_num
@@ -1386,8 +1388,8 @@ else:
             sys.stdout.flush()
             #learning_rate = tf.placeholder(tf.float32,shape=[])
             opt = tf.train.GradientDescentOptimizer(0.05)
-            opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate=len(hosts)-1,
-                                    total_num_replicas=len(hosts)-1)
+            #opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate=len(hosts)-1,total_num_replicas=len(hosts)-1)
+            opt = sync(opt,replicas_to_aggregate=len(hosts)-1,total_num_replicas=len(hosts)-1,y1 = -2*Il1, y2 = -2*Il2,g1 = IL1d, g2 = IL2d  )
             sync_replicas_hook = opt.make_session_run_hook(is_chief)
 
             #Here we extract the gradients of the pulses
@@ -1461,14 +1463,15 @@ else:
                 #sys.stdout.flush()
 
                 #nos, exs, l1d,l2d,  q, l1, l2, int_vecs,step = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs, global_step], feed_dict=fd_dict)
-                _, step = sess.run([optimizer, global_step], feed_dict=fd_dict)
+                _, step, rl = sess.run([optimizer, global_step, reg_loss], feed_dict=fd_dict)
                 #print (np.square(l1 + l2))
                 #sys.stdout.flush()
                 my_print (ii)
                 my_print(task_index)
+                my_print(rl)
                 #time.sleep( np.random.random_sample())
                 with open('out.txt', 'a') as the_file:
-                    the_file.write('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories " + "step:" + str(step) +  " " + str(os.environ["SLURMD_NODENAME"]) +"\n")
+                    the_file.write('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories " + "step:" + str(step) +  " " + str(os.environ["SLURMD_NODENAME"]) + "Area: " + str(-rl) + "\n")
 
                 #sys.stdout.flush()
 
