@@ -210,14 +210,7 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
       ValueError: If global step is not provided, the staleness cannot be
         checked.
     """
-    grad_accum_y = data_flow_ops.ConditionalAccumulator(
-                self.y.dtype,
-                shape=self.y.get_shape(),
-                shared_name= "y/grad_accum")
-            train_ops.append(grad_accum.apply_grad(
-                grad, local_step=self._local_step))
-            aggregated_grad.append(grad_accum.take_grad(
-                self._replicas_to_aggregate))
+   
         
     if not grads_and_vars:
       raise ValueError("Must supply at least one variable")
