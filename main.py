@@ -646,7 +646,9 @@ c_ops=[]
 c_ops.append(np.sqrt(gamma)*sm)
 c_ops.append(np.sqrt(kappa)*a)
 
-u0 = None
+u0 = []
+signal = 0.02*np.tanh(np.linspace(0,total_time, steps)/10)
+u0.append(signal)
 
 print ("Parameters Defined")
 
