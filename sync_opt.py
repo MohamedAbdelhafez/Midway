@@ -222,7 +222,7 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     train_ops = []
     aggregated_grad = []
     var_list = []
-    aggregated_y = []
+    
     aggregated_g = []
     
 
@@ -251,8 +251,8 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
                 shared_name= "y/grad_accum")
     train_ops.append(grad_accum_y.apply_grad(
                 self.y, local_step=self._local_step))
-    aggregated_y.append(grad_accum_y.take_grad(
-                self._replicas_to_aggregate))
+    aggregated_y = grad_accum_y.take_grad(
+                self._replicas_to_aggregate)
     grad_accum_g = data_flow_ops.ConditionalAccumulator(
                 self.g.dtype,
                 shape=self.g.get_shape(),
@@ -292,9 +292,11 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
                 self._replicas_to_aggregate))
 
           self._accumulator_list.append((grad_accum, var.device))
+      
+      aggregated_grad = aggregated_y *aggregated_g
 
-      #aggregated_grads_and_vars = zip(aggregated_grad, var_list)
-      aggregated_grads_and_vars = zip(aggregated_y[0] *aggregated_g, var_list)
+      aggregated_grads_and_vars = zip(aggregated_grad, var_list)
+      #aggregated_grads_and_vars = zip(aggregated_y[0] *aggregated_g, var_list)
 
       # sync_op will be assigned to the same device as the global step.
       with ops.device(global_step.device), ops.name_scope(""):
