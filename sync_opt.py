@@ -213,6 +213,10 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     print (self.g)
     print (self.y)
     sys.stdout.flush()
+    for grad, var in grads_and_vars:
+        print (grad)
+        sys.stdout.flush()
+        
     if not grads_and_vars:
       raise ValueError("Must supply at least one variable")
 
