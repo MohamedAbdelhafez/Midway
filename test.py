@@ -557,8 +557,8 @@ class SystemParameters:
 
 
 #Defining time scales
-total_time = 5
-steps = 50
+total_time = 50
+steps = 500
 state_transfer = True
 RWA = True
 RFT = True
@@ -1387,7 +1387,7 @@ else:
             print ("Training loss initialized.")
             sys.stdout.flush()
             #learning_rate = tf.placeholder(tf.float32,shape=[])
-            opt = tf.train.GradientDescentOptimizer(0.05)
+            opt =tf.train.AdamOptimizer(learning_rate = 0.05)
             #opt = tf.train.SyncReplicasOptimizer(opt, replicas_to_aggregate=len(hosts)-1,total_num_replicas=len(hosts)-1)
             opt = sync(opt,replicas_to_aggregate=len(hosts)-1,total_num_replicas=len(hosts)-1,y1 = -2*Il1, y2 = -2*Il2,g1 = Il1d, g2 = Il2d  )
             sync_replicas_hook = opt.make_session_run_hook(is_chief)
@@ -1471,7 +1471,7 @@ else:
                 my_print(rl)
                 #time.sleep( np.random.random_sample())
                 with open('out.txt', 'a') as the_file:
-                    the_file.write('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories " + "step:" + str(step) +  " " + str(os.environ["SLURMD_NODENAME"]) + "Area: " + str(-rl) + "\n")
+                    the_file.write('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories " + "step:" + str(step) +  " " + str(os.environ["SLURMD_NODENAME"]) + " Area: " + str(-rl) + "\n")
 
                 #sys.stdout.flush()
 
