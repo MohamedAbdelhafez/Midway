@@ -191,9 +191,7 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
 
   def apply_gradients(self, grads_and_vars, global_step=None, name=None):
         
-        print (self.g)
-        print (self.y)
-        sys.stdout.flush()
+        
     """Apply gradients to variables.
     This contains most of the synchronization implementation and also wraps the
     apply_gradients() from the real optimizer.
@@ -212,6 +210,9 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
       ValueError: If global step is not provided, the staleness cannot be
         checked.
     """
+    print (self.g)
+    print (self.y)
+    sys.stdout.flush()
     if not grads_and_vars:
       raise ValueError("Must supply at least one variable")
 
