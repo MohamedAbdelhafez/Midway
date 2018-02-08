@@ -31,7 +31,7 @@ from tensorflow.python.training import optimizer
 from tensorflow.python.training import queue_runner
 from tensorflow.python.training import session_manager
 from tensorflow.python.training import session_run_hook
-
+import sys
 
 # Please note that the gradients from replicas are averaged instead of summed
 # (as in the old sync_replicas_optimizer) so you need to increase the learning
@@ -162,6 +162,8 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     self._tokens_per_step = max(total_num_replicas, replicas_to_aggregate)
     self._global_step = None
     self._sync_token_queue = None
+    self.y = y
+    self.g = g
 
     # The synchronization op will be executed in a queue runner which should
     # only be executed by one of the replicas (usually the chief).
@@ -188,6 +190,10 @@ class SyncReplicasOptimizer(optimizer.Optimizer):
     return self._opt.compute_gradients(*args, **kwargs)
 
   def apply_gradients(self, grads_and_vars, global_step=None, name=None):
+        
+        print (self.g)
+        print (self.y)
+        sys.stdout.flush()
     """Apply gradients to variables.
     This contains most of the synchronization implementation and also wraps the
     apply_gradients() from the real optimizer.
