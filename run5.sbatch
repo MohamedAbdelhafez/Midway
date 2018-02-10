@@ -3,9 +3,9 @@
 #SBATCH --job-name=cpuSbatch 
 #SBATCH --output=cpuSbatch.out 
 #SBATCH --error=cpuSbatch.err 
-#SBATCH --time=02:00:00 
-#SBATCH --nodes=4
-#SBATCH --ntasks=4
+#SBATCH --time=10:00:00 
+#SBATCH --nodes=10
+#SBATCH --ntasks=10
 #SBATCH --exclusive 
 #SBATCH -p broadwl 
 #SBATCH --tasks-per-node=1 
@@ -22,8 +22,13 @@ unset https_proxy
 srun -n 1 -N 1 test.py  & 
 srun -n 1 -N 1 test.py  &
 srun -n 1 -N 1 test.py  &
+srun -n 1 -N 1 test.py  &
+srun -n 1 -N 1 test.py  &
+srun -n 1 -N 1 test.py  &
+srun -n 1 -N 1 test.py  &
+srun -n 1 -N 1 test.py  &
+srun -n 1 -N 1 test.py  &
 srun -n 1 -N 1 test.py 
-
 
 
 

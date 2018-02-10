@@ -557,8 +557,8 @@ class SystemParameters:
 
 
 #Defining time scales
-total_time = 50
-steps = 500
+total_time = 100
+steps = 1500
 state_transfer = True
 RWA = True
 RFT = True
@@ -569,14 +569,14 @@ RFT = True
 
 
 
-qubit_state_num = 2
+qubit_state_num = 4
 
 fq= 4.6/(2*np.pi)
 kappa = 0.05
 gamma = 0.001
 g = 0.05
 
-mode_state_num = 5
+mode_state_num = 30
 #g = 2.*np.pi*0.1 #GHz
 fc = 5.0/(2*np.pi) #GHz
 state_num = qubit_state_num * mode_state_num
@@ -631,7 +631,7 @@ U0= q_identity
 IX = a + adag
 IY = (0+1j)* (a-adag)
 Hops = [IX]
-ops_max_amp = [0.05]
+ops_max_amp = [2]
 Hnames =['HI']
 
 #Defining convergence parameters
@@ -1463,12 +1463,13 @@ else:
                 #sys.stdout.flush()
 
                 #nos, exs, l1d,l2d,  q, l1, l2, int_vecs,step = sess.run([norms, expectations, Il1d, Il2d,quad, Il1, Il2, inter_vecs, global_step], feed_dict=fd_dict)
-                _, step, rl = sess.run([optimizer, global_step, reg_loss], feed_dict=fd_dict)
+                _, step, rl, ws = sess.run([optimizer, global_step, reg_loss, H_weights], feed_dict=fd_dict)
                 #print (np.square(l1 + l2))
                 #sys.stdout.flush()
                 my_print (ii)
                 my_print(task_index)
                 my_print(rl)
+                np.save("H_weights", H_weights)
                 #time.sleep( np.random.random_sample())
                 with open('out.txt', 'a') as the_file:
                     the_file.write('\r'+' Iteration: ' +str(ii) + ": Running batch #" +str(task_index+1)+" out of "+str(num_batches)+ " with "+str(num_traj_batch)+" jump trajectories " + "step:" + str(step) +  " " + str(os.environ["SLURMD_NODENAME"]) + " Area: " + str(-rl) + "\n")
