@@ -569,14 +569,14 @@ RFT = True
 
 
 
-qubit_state_num = 4
+qubit_state_num = 3
 
 fq= 4.6/(2*np.pi)
 kappa = 0.05
 gamma = 0.001
 g = 0.05
 
-mode_state_num = 30
+mode_state_num = 20
 #g = 2.*np.pi*0.1 #GHz
 fc = 5.0/(2*np.pi) #GHz
 state_num = qubit_state_num * mode_state_num
