@@ -4,8 +4,8 @@
 #SBATCH --output=cpuSbatch.out 
 #SBATCH --error=cpuSbatch.err 
 #SBATCH --time=10:00:00 
-#SBATCH --nodes=10
-#SBATCH --ntasks=10
+#SBATCH --nodes=3
+#SBATCH --ntasks=3
 #SBATCH --exclusive 
 #SBATCH -p broadwl 
 #SBATCH --tasks-per-node=1 
@@ -21,14 +21,7 @@ unset http_proxy
 unset https_proxy
 srun -n 1 -N 1 lin.py  & 
 srun -n 1 -N 1 lin.py  &
-srun -n 1 -N 1 lin.py  &
-srun -n 1 -N 1 lin.py  &
-srun -n 1 -N 1 lin.py  &
-srun -n 1 -N 1 lin.py  &
-srun -n 1 -N 1 lin.py  &
-srun -n 1 -N 1 lin.py  &
-srun -n 1 -N 1 lin.py  &
-srun -n 1 -N 1 lin.py 
+srun -n 1 -N 1 lin.py   
 
 
 
