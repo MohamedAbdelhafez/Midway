@@ -942,14 +942,14 @@ for ii in range (clusters+1):
         end_i = len(tf_hostlist)-1
     string = tf_hostlist[start_i:end_i]
     if (len(string) <5):
-        hosts.append(server+string+":2222")
+        hosts.append(server+string+":2223")
     else:
         s = int(string[0:4])
         e = int(string[6:10])
         for jj in range (e-s+1):
-            hosts.append(server+str(s+jj).zfill(4)+":2222")
+            hosts.append(server+str(s+jj).zfill(4)+":2223")
 
-idx = hosts.index(node_name+":2222") 
+idx = hosts.index(node_name+":2223") 
 if (idx==0):
     job_name = "ps"
     task_index = 0
